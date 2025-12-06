@@ -1,5 +1,6 @@
 package com.lucadron.service;
 
+import com.lucadron.i18n.LanguageManager;
 import com.lucadron.model.Book;
 import com.lucadron.model.BorrowedBook;
 import com.lucadron.model.Member;
@@ -40,21 +41,21 @@ public class LibraryService {
 
             Member member = memberRepo.getMemberById(memberId);
             if (member == null) {
-                throw new RuntimeException("Üye bulunamadı: " + memberId);
+                throw new RuntimeException(LanguageManager.format("error.member.notfound", memberId));
             }
 
             Book book = bookRepo.getBookById(bookId);
             if (book == null) {
-                throw new RuntimeException("Kitap bulunamadı: " + bookId);
+                throw new RuntimeException(LanguageManager.format("error.book.notfound", bookId));
             }
 
             if (book.isBorrowed()) {
-                throw new RuntimeException("Kitap zaten ödünç alınmış: " + bookId);
+                throw new RuntimeException(LanguageManager.format("error.book.alreadyBorrowed", bookId));
             }
 
             List<BorrowedBook> borrowedList = borrowRepo.getBorrowedBooksByMemberId(memberId);
             if (borrowedList.size() >= 3) {
-                throw new RuntimeException("Bu üye zaten maksimum 3 kitap ödünç almış.");
+                throw new RuntimeException(LanguageManager.get("error.member.maxBooks"));
             }
 
             BorrowedBook record = new BorrowedBook(memberId, bookId, LocalDateTime.now());
@@ -68,9 +69,9 @@ public class LibraryService {
             try {
                 connection.rollback();
             } catch (SQLException ex) {
-                System.err.println("Rollback başarısız: " + ex.getMessage());
+                System.err.println(LanguageManager.get("error.rollback") + ": " + ex.getMessage());
             }
-            throw new RuntimeException("Kitap ödünç alma başarısız: " + e.getMessage());
+            throw new RuntimeException(LanguageManager.format("error.borrow.failed", e.getMessage()));
         }
     }
 
@@ -80,15 +81,14 @@ public class LibraryService {
 
             Book book = bookRepo.getBookById(bookId);
             if (book == null) {
-                throw new RuntimeException("Kitap bulunamadı: " + bookId);
+                throw new RuntimeException(LanguageManager.format("error.book.notfound", bookId));
             }
 
             if (!book.isBorrowed()) {
-                throw new RuntimeException("Bu kitap zaten kütüphanede, ödünç değil.");
+                throw new RuntimeException(LanguageManager.get("error.book.notBorrowed"));
             }
 
             borrowRepo.deleteBorrowRecord(memberId, bookId);
-
             bookRepo.updateBorrowedStatus(bookId, false);
 
             connection.commit();
@@ -97,9 +97,9 @@ public class LibraryService {
             try {
                 connection.rollback();
             } catch (SQLException ex) {
-                System.err.println("Rollback başarısız: " + ex.getMessage());
+                System.err.println(LanguageManager.get("error.rollback") + ": " + ex.getMessage());
             }
-            throw new RuntimeException("Kitap iade edilemedi: " + e.getMessage());
+            throw new RuntimeException(LanguageManager.format("error.return.failed", e.getMessage()));
         }
     }
 
@@ -113,29 +113,25 @@ public class LibraryService {
 
     private void validateMemberInput(String name, String email) {
         if (name == null || name.trim().isEmpty()) {
-            throw new RuntimeException("Üye adı boş olamaz.");
+            throw new RuntimeException(LanguageManager.get("error.validation.memberNameEmpty"));
         }
-
         if (email == null || email.trim().isEmpty()) {
-            throw new RuntimeException("Email boş olamaz.");
+            throw new RuntimeException(LanguageManager.get("error.validation.memberEmailEmpty"));
         }
-
         if (!email.contains("@") || !email.contains(".")) {
-            throw new RuntimeException("Email formatı geçersiz.");
+            throw new RuntimeException(LanguageManager.get("error.validation.memberEmailFormat"));
         }
     }
 
     private void validateBookInput(String title, String author, int year) {
         if (title == null || title.trim().isEmpty()) {
-            throw new RuntimeException("Kitap adı boş olamaz.");
+            throw new RuntimeException(LanguageManager.get("error.validation.bookTitleEmpty"));
         }
-
         if (author == null || author.trim().isEmpty()) {
-            throw new RuntimeException("Yazar adı boş olamaz.");
+            throw new RuntimeException(LanguageManager.get("error.validation.bookAuthorEmpty"));
         }
-
         if (year < 0 || year > LocalDateTime.now().getYear()) {
-            throw new RuntimeException("Kitap yılı geçerli değil.");
+            throw new RuntimeException(LanguageManager.get("error.validation.bookYear"));
         }
     }
 }
