@@ -97,16 +97,24 @@ The project includes **5 meaningful test cases** covering:
 - Repository interaction (mocked)  
 
 Test runner:
-mvn test
 
+```
+mvn test
+```
 
 ---
 
 ## 🚀 Running the Application
 
-### Build fat jar:
+### Build:
 
 ```bash
 mvn clean package
+```
+
+### Run:
+
+```bash
 java -jar target/library-management-system-1.0-SNAPSHOT.jar
+```
 
