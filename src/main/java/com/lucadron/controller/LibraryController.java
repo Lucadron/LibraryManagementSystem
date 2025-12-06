@@ -45,7 +45,7 @@ public class LibraryController {
     }
 
     private void printMenu() {
-        System.out.println(YELLOW + "\n📚 " + LanguageManager.get("menu.title") + RESET);
+        System.out.println(YELLOW + "\n" + LanguageManager.get("menu.title") + RESET);
         System.out.println("1️⃣  " + LanguageManager.get("menu.option.addBook"));
         System.out.println("2️⃣  " + LanguageManager.get("menu.option.addMember"));
         System.out.println("3️⃣  " + LanguageManager.get("menu.option.borrowBook"));
@@ -56,7 +56,7 @@ public class LibraryController {
     }
 
     private void addBook() {
-        System.out.println("\n📘 " + LanguageManager.get("book.add.header"));
+        System.out.println("\n " + LanguageManager.get("book.add.header"));
 
         System.out.print(LanguageManager.get("book.prompt.title") + " ");
         String title = scanner.nextLine();
@@ -73,7 +73,7 @@ public class LibraryController {
     }
 
     private void addMember() {
-        System.out.println("\n👤 " + LanguageManager.get("member.add.header"));
+        System.out.println("\n " + LanguageManager.get("member.add.header"));
 
         System.out.print(LanguageManager.get("member.prompt.name") + " ");
         String name = scanner.nextLine();
@@ -87,7 +87,7 @@ public class LibraryController {
     }
 
     private void borrowBook() {
-        System.out.println("\n📕 " + LanguageManager.get("borrow.header"));
+        System.out.println("\n " + LanguageManager.get("borrow.header"));
 
         System.out.print(LanguageManager.get("borrow.prompt.memberId") + " ");
         int memberId = Integer.parseInt(scanner.nextLine());
@@ -101,7 +101,7 @@ public class LibraryController {
     }
 
     private void returnBook() {
-        System.out.println("\n📗 " + LanguageManager.get("return.header"));
+        System.out.println("\n " + LanguageManager.get("return.header"));
 
         System.out.print(LanguageManager.get("return.prompt.memberId") + " ");
         int memberId = Integer.parseInt(scanner.nextLine());
@@ -115,7 +115,7 @@ public class LibraryController {
     }
 
     private void listBorrowedByMember() {
-        System.out.println("\n📙 " + LanguageManager.get("list.borrowed.header"));
+        System.out.println("\n " + LanguageManager.get("list.borrowed.header"));
 
         System.out.print(LanguageManager.get("borrow.prompt.memberId") + " ");
         int memberId = Integer.parseInt(scanner.nextLine());
@@ -131,14 +131,14 @@ public class LibraryController {
     }
 
     private void listAllBooks() {
-        System.out.println("\n📚 " + LanguageManager.get("list.all.header"));
+        System.out.println("\n " + LanguageManager.get("list.all.header"));
 
         List<Book> books = service.listAllBooks();
         books.forEach(book -> System.out.println(CYAN + book + RESET));
     }
 
     private void exitProgram() {
-        System.out.println(GREEN + "\n👋 " + LanguageManager.get("exit.message") + RESET);
+        System.out.println(GREEN + "\n " + LanguageManager.get("exit.message") + RESET);
         System.exit(0);
     }
 }
