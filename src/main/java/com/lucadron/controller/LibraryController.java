@@ -36,23 +36,23 @@ public class LibraryController {
                     case "5" -> listBorrowedByMember();
                     case "6" -> listAllBooks();
                     case "0" -> exitProgram();
-                    default -> System.out.println(RED + "❌ " + LanguageManager.get("error.invalid.choice") + RESET);
+                    default -> System.out.println(RED + "X| " + LanguageManager.get("error.invalid.choice") + RESET);
                 }
             } catch (Exception e) {
-                System.out.println(RED + "❌ " + e.getMessage() + RESET);
+                System.out.println(RED + "X| " + e.getMessage() + RESET);
             }
         }
     }
 
     private void printMenu() {
         System.out.println(YELLOW + "\n" + LanguageManager.get("menu.title") + RESET);
-        System.out.println("1️⃣  " + LanguageManager.get("menu.option.addBook"));
-        System.out.println("2️⃣  " + LanguageManager.get("menu.option.addMember"));
-        System.out.println("3️⃣  " + LanguageManager.get("menu.option.borrowBook"));
-        System.out.println("4️⃣  " + LanguageManager.get("menu.option.returnBook"));
-        System.out.println("5️⃣  " + LanguageManager.get("menu.option.listBorrowedByMember"));
-        System.out.println("6️⃣  " + LanguageManager.get("menu.option.listAllBooks"));
-        System.out.println("0️⃣  " + LanguageManager.get("menu.option.exit"));
+        System.out.println("1 - " + LanguageManager.get("menu.option.addBook"));
+        System.out.println("2 - " + LanguageManager.get("menu.option.addMember"));
+        System.out.println("3 - " + LanguageManager.get("menu.option.borrowBook"));
+        System.out.println("4 - " + LanguageManager.get("menu.option.returnBook"));
+        System.out.println("5 - " + LanguageManager.get("menu.option.listBorrowedByMember"));
+        System.out.println("6 - " + LanguageManager.get("menu.option.listAllBooks"));
+        System.out.println("0 - " + LanguageManager.get("menu.option.exit"));
     }
 
     private void addBook() {
@@ -69,7 +69,7 @@ public class LibraryController {
 
         Book book = service.addBook(title, author, year);
 
-        System.out.println(GREEN + "✔ " + LanguageManager.format("book.add.success", book) + RESET);
+        System.out.println(GREEN + "ok| " + LanguageManager.format("book.add.success", book) + RESET);
     }
 
     private void addMember() {
@@ -83,7 +83,7 @@ public class LibraryController {
 
         Member member = service.addMember(name, email);
 
-        System.out.println(GREEN + "✔ " + LanguageManager.format("member.add.success", member) + RESET);
+        System.out.println(GREEN + "ok| " + LanguageManager.format("member.add.success", member) + RESET);
     }
 
     private void borrowBook() {
@@ -97,7 +97,7 @@ public class LibraryController {
 
         service.borrowBook(memberId, bookId);
 
-        System.out.println(GREEN + "✔ " + LanguageManager.get("borrow.success") + RESET);
+        System.out.println(GREEN + "ok| " + LanguageManager.get("borrow.success") + RESET);
     }
 
     private void returnBook() {
@@ -111,7 +111,7 @@ public class LibraryController {
 
         service.returnBook(memberId, bookId);
 
-        System.out.println(GREEN + "✔ " + LanguageManager.get("return.success") + RESET);
+        System.out.println(GREEN + "ok| " + LanguageManager.get("return.success") + RESET);
     }
 
     private void listBorrowedByMember() {
@@ -123,7 +123,7 @@ public class LibraryController {
         List<BorrowedBook> list = service.listBorrowedBooksByMember(memberId);
 
         if (list.isEmpty()) {
-            System.out.println(YELLOW + "⚠ " + LanguageManager.get("list.borrowed.none") + RESET);
+            System.out.println(YELLOW + "!| " + LanguageManager.get("list.borrowed.none") + RESET);
             return;
         }
 
@@ -138,7 +138,7 @@ public class LibraryController {
     }
 
     private void exitProgram() {
-        System.out.println(GREEN + "\n " + LanguageManager.get("exit.message") + RESET);
+        System.out.println(GREEN + "\n" + LanguageManager.get("exit.message") + RESET);
         System.exit(0);
     }
 }
