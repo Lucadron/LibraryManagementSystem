@@ -31,10 +31,17 @@
             <version>${postgresql.version}</version>
         </dependency>
 
-        <!-- Flyway Core (DB migration) -->
+        <!-- Flyway Core (genel iskelet) -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
+            <version>${flyway.version}</version>
+        </dependency>
+
+        <!-- Flyway PostgreSQL desteği (ÖNEMLİ: No database found... hatasını çözer) -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
             <version>${flyway.version}</version>
         </dependency>
 
@@ -54,7 +61,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- SLF4J Simple Logger (isteğe bağlı, logging için) -->
+        <!-- SLF4J Simple Logger -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
@@ -64,7 +71,7 @@
 
     <build>
         <plugins>
-            <!-- Maven Surefire (JUnit 5 testleri için) -->
+            <!-- JUnit 5 testleri -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -76,7 +83,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Fat JAR için Shade Plugin (README’de de referans verdik) -->
+            <!-- Fat JAR için Shade plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
