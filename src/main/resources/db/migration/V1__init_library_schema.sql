@@ -1,7 +1,6 @@
 -- V1__init_library_schema.sql
 -- Flyway migration: tablo oluşturma + örnek veriler
 
--- Önce eski tabloları (varsa) sil
 DROP TABLE IF EXISTS borrowed_books;
 DROP TABLE IF EXISTS books;
 DROP TABLE IF EXISTS members;
@@ -40,4 +39,4 @@ INSERT INTO books (title, author, year, is_borrowed) VALUES
 INSERT INTO members (name, email) VALUES
                                       ('Emre Gülşen', 'emre@example.com'),
                                       ('Ada Lovelace', 'ada@example.com'),
-                                      ('Alan Turing', 'alan@example.com);
+                                      ('Alan Turing', 'alan@example.com');
