@@ -31,14 +31,14 @@
             <version>${postgresql.version}</version>
         </dependency>
 
-        <!-- Flyway Core (genel iskelet) -->
+        <!-- Flyway Core -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
             <version>${flyway.version}</version>
         </dependency>
 
-        <!-- Flyway PostgreSQL desteği (ÖNEMLİ: No database found... hatasını çözer) -->
+        <!-- Flyway PostgreSQL -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
@@ -71,7 +71,7 @@
 
     <build>
         <plugins>
-            <!-- JUnit 5 testleri -->
+            <!-- JUnit 5 tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -83,7 +83,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Fat JAR için Shade plugin -->
+            <!-- Fat JAR to Shade plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -97,12 +97,12 @@
                         <configuration>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <transformers>
-                                <!-- MAIN-CLASS ekler -->
+                                <!-- MAIN-CLASS -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>com.lucadron.Main</mainClass>
                                 </transformer>
 
-                                <!-- EN ÖNEMLİ SATIR: Service dosyalarını merge eder -->
+                                <!-- Service files merging -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                             </transformers>
                         </configuration>
