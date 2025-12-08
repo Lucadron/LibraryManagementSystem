@@ -97,9 +97,13 @@
                         <configuration>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <transformers>
+                                <!-- MAIN-CLASS ekler -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>com.lucadron.Main</mainClass>
                                 </transformer>
+
+                                <!-- EN ÖNEMLİ SATIR: Service dosyalarını merge eder -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                             </transformers>
                         </configuration>
                     </execution>
