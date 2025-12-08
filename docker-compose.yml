@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: library-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: library_db
+      POSTGRES_USER: library_user
+      POSTGRES_PASSWORD: StrongPassword123!
+    ports:
+      - "5432:5432"
+    volumes:
+      - library_db_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: library-app
+    depends_on:
+      - postgres
+    environment:
+      # DatabaseConnection.java içinde overrideWithEnvIfPresent ile okunuyor
+      DB_URL: jdbc:postgresql://postgres:5432/library_db
+      DB_USER: library_user
+      DB_PASSWORD: StrongPassword123!
+      DB_AUTOCOMMIT: "false"
+    stdin_open: true   # Konsol etkileşimi için
+    tty: true          # Renkli output / interaktif kullanım için
+
+volumes:
+  library_db_data:
