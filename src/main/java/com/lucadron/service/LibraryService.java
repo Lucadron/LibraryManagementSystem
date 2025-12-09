@@ -111,6 +111,15 @@ public class LibraryService {
         return bookRepo.getAllBooks();
     }
 
+    public List<Book> searchBooks(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            throw new RuntimeException(LanguageManager.get("error.validation.searchKeywordEmpty"));
+        }
+
+        String trimmed = keyword.trim();
+        return bookRepo.searchBooks(trimmed);
+    }
+
     private void validateMemberInput(String name, String email) {
         if (name == null || name.trim().isEmpty()) {
             throw new RuntimeException(LanguageManager.get("error.validation.memberNameEmpty"));
