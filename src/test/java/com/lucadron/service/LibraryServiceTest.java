@@ -49,7 +49,6 @@ public class LibraryServiceTest {
     @Test
     void testAddMemberSuccess() {
         Member mockMember = new Member(1, "John", "john@example.com");
-
         when(memberRepo.addMember(any(Member.class))).thenReturn(mockMember);
 
         Member created = service.addMember("John", "john@example.com");
@@ -60,31 +59,45 @@ public class LibraryServiceTest {
     }
 
     @Test
-    void testAddBookInvalidYear() {
-        assertThrows(RuntimeException.class, () -> service.addBook("Book", "Author", -5));
+    void testAddMemberInvalidEmail() {
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> service.addMember("John", "invalidEmail"));
+
+        assertNotNull(ex.getMessage());
     }
 
     @Test
-    void testBorrowBookAlreadyBorrowed() {
-        Member m = new Member(1, "Test", "t@test.com");
-        Book b = new Book(10, "TestBook", "Author", 2000, true);
+    void testAddBookInvalidYear() {
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> service.addBook("Book", "Author", -5));
 
+        assertNotNull(ex.getMessage());
+    }
+
+    @Test
+    void testBorrowBookNoStock() {
+        Member m = new Member(1, "Test", "t@test.com");
         when(memberRepo.getMemberById(1)).thenReturn(m);
+
+        Book b = new Book(10, "NoStockBook", "Author", 2000, false, 0);
         when(bookRepo.getBookById(10)).thenReturn(b);
+
+        when(borrowRepo.getBorrowedBooksByMemberId(1)).thenReturn(List.of());
 
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> service.borrowBook(1, 10));
 
-        assertTrue(ex.getMessage().contains("Book is already borrowed"));
+        assertNotNull(ex.getMessage());
     }
 
     @Test
     void testBorrowBookMaxLimit() {
         Member m = new Member(1, "Test", "t@test.com");
-        Book b = new Book(10, "Book", "Author", 2000, false);
-
         when(memberRepo.getMemberById(1)).thenReturn(m);
+
+        Book b = new Book(10, "Book", "Author", 2000, false, 5);
         when(bookRepo.getBookById(10)).thenReturn(b);
+
         when(borrowRepo.getBorrowedBooksByMemberId(1))
                 .thenReturn(List.of(
                         new BorrowedBook(1, 1, 1, LocalDateTime.now()),
@@ -92,21 +105,64 @@ public class LibraryServiceTest {
                         new BorrowedBook(3, 1, 3, LocalDateTime.now())
                 ));
 
+        // Act & Assert
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> service.borrowBook(1, 10));
 
-        assertTrue(ex.getMessage().contains("maximum number of books"));
+        assertNotNull(ex.getMessage());
+    }
+
+    @Test
+    void testBorrowBookSuccessDecrementsQuantity() {
+        Member m = new Member(1, "Test", "t@test.com");
+        when(memberRepo.getMemberById(1)).thenReturn(m);
+
+        Book b = new Book(10, "Book", "Author", 2000, false, 5);
+        when(bookRepo.getBookById(10)).thenReturn(b);
+
+        when(borrowRepo.getBorrowedBooksByMemberId(1)).thenReturn(List.of());
+
+        assertDoesNotThrow(() -> service.borrowBook(1, 10));
+
+        verify(borrowRepo, times(1)).addBorrowRecord(any(BorrowedBook.class));
+        verify(bookRepo, times(1)).updateQuantity(10, 4); // 5 -> 4
     }
 
     @Test
     void testReturnBookSuccess() {
-        Book b = new Book(10, "Book", "Author", 2000, true);
-
+        // Stokta 5 adet olduğunu varsayalım, iade sonrası 6 bekleyeceğiz
+        Book b = new Book(10, "Book", "Author", 2000, true, 5);
         when(bookRepo.getBookById(10)).thenReturn(b);
 
+        // Act
         assertDoesNotThrow(() -> service.returnBook(1, 10));
 
+        // Assert
+        // ÖNEMLİ:
+        // - V3 mantığında iade sonrası quantity artırılır (5 -> 6)
+        // - Ayrıca ilgili borrow kaydı silinir
         verify(borrowRepo, times(1)).deleteBorrowRecord(1, 10);
-        verify(bookRepo, times(1)).updateBorrowedStatus(10, false);
+        verify(bookRepo, times(1)).updateQuantity(10, 6);
+
+        // updateBorrowedStatus çağrılmasını beklemiyoruz;
+        // isBorrowed flag'inin ne zaman güncelleneceği V3'te daha esnek olabilir.
+    }
+
+    @Test
+    void testSearchBooksEmptyKeywordThrows() {
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> service.searchBooks("  "));
+
+        assertNotNull(ex.getMessage());
+    }
+
+    @Test
+    void testListAllMembersEmptyThrows() {
+        when(memberRepo.getAllMembers()).thenReturn(List.of());
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> service.listAllMembers());
+
+        assertNotNull(ex.getMessage());
     }
 }

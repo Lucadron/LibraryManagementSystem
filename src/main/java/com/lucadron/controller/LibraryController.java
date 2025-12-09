@@ -35,6 +35,8 @@ public class LibraryController {
                     case "4" -> returnBook();
                     case "5" -> listBorrowedByMember();
                     case "6" -> listAllBooks();
+                    case "7" -> searchBooksInteractive();
+                    case "8" -> listAllMembers();
                     case "0" -> exitProgram();
                     default -> System.out.println(RED + "X| " + LanguageManager.get("error.invalid.choice") + RESET);
                 }
@@ -52,6 +54,8 @@ public class LibraryController {
         System.out.println("4 - " + LanguageManager.get("menu.option.returnBook"));
         System.out.println("5 - " + LanguageManager.get("menu.option.listBorrowedByMember"));
         System.out.println("6 - " + LanguageManager.get("menu.option.listAllBooks"));
+        System.out.println("7 - " + LanguageManager.get("menu.option.searchBooks"));
+        System.out.println("8 - " + LanguageManager.get("menu.option.listAllMembers"));
         System.out.println("0 - " + LanguageManager.get("menu.option.exit"));
     }
 
@@ -67,7 +71,10 @@ public class LibraryController {
         System.out.print(LanguageManager.get("book.prompt.year") + " ");
         int year = Integer.parseInt(scanner.nextLine());
 
-        Book book = service.addBook(title, author, year);
+        System.out.print(LanguageManager.get("book.prompt.quantity") + " ");
+        int quantity = Integer.parseInt(scanner.nextLine());
+
+        Book book = service.addBook(title, author, year, quantity);
 
         System.out.println(GREEN + "ok| " + LanguageManager.format("book.add.success", book) + RESET);
     }
@@ -135,6 +142,61 @@ public class LibraryController {
 
         List<Book> books = service.listAllBooks();
         books.forEach(book -> System.out.println(CYAN + book + RESET));
+    }
+
+    private void listAllMembers() {
+        System.out.println("\n " + LanguageManager.get("list.members.header"));
+
+        try {
+            List<Member> members = service.listAllMembers();
+            for (Member m : members) {
+                System.out.println(CYAN + m + RESET);
+            }
+        } catch (Exception e) {
+            System.out.println(RED + "X| " + e.getMessage() + RESET);
+        }
+    }
+
+    private void searchBooksInteractive() {
+        System.out.println("\n " + LanguageManager.get("search.header"));
+
+        System.out.print(LanguageManager.get("search.prompt.keyword") + " ");
+        String keyword = scanner.nextLine();
+
+        if (keyword.trim().isEmpty()) {
+            System.out.println(YELLOW + "!| " + LanguageManager.get("error.validation.searchKeywordEmpty") + RESET);
+            return;
+        }
+
+        List<Book> results = service.searchBooks(keyword);
+
+        if (results.isEmpty()) {
+            System.out.println(YELLOW + "!| " + LanguageManager.get("search.result.none") + RESET);
+            return;
+        }
+
+        System.out.println(CYAN + LanguageManager.get("search.result.header") + RESET);
+
+        for (Book book : results) {
+            String statusKey = book.getQuantity() > 0
+                    ? "book.status.available"
+                    : "book.status.borrowed";
+
+            String statusLabel = LanguageManager.get(statusKey);
+
+            System.out.println(
+                    CYAN +
+                            "Book {" +
+                            "id=" + book.getId() +
+                            ", title='" + book.getTitle() + '\'' +
+                            ", author='" + book.getAuthor() + '\'' +
+                            ", year=" + book.getYear() +
+                            ", quantity=" + book.getQuantity() +
+                            ", status=" + statusLabel +
+                            '}' +
+                            RESET
+            );
+        }
     }
 
     private void exitProgram() {

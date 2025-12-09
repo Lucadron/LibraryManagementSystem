@@ -5,19 +5,21 @@
 
 ---
 
-## 🎯 Proje Genel Bakış
+## 🎯 Proje Hakkında
 
-Bu proje, Java geliştirici vaka çalışmasının bir parçası olarak geliştirilmiş **konsol tabanlı bir Kütüphane Yönetim Sistemi**'dir.  
-Şunları gösterir:
+Bu proje, bir Java geliştirici vaka çalışması kapsamında geliştirilmiş **konsol tabanlı Kütüphane Yönetim Sistemi**'dir.  
+Profesyonel Java geliştirme yeteneklerini temiz mimari, veritabanı entegrasyonu ve modern geliştirme pratikleriyle sergiler.
 
-- Temiz **katmanlı mimari**
-- **JDBC** veritabanı entegrasyonu (PostgreSQL)
+**Öne Çıkan Özellikler:**
+- Temiz **katmanlı mimari** (Model → Repository → Service → Controller)
+- PostgreSQL ile **JDBC** veritabanı entegrasyonu
+- **Flyway** veritabanı migrasyonları
 - **Uluslararasılaştırma (i18n)** desteği (TR/EN/DE)
 - JUnit 5 + Mockito ile **birim testleri**
-- **Flyway migrasyonları** ile veritabanı şema yönetimi
-- **Docker Compose** ile tamamen otomatik kurulum
-- İşlem güvenli ödünç alma/iade işlemleri
-- Üretime uygun profesyonel kod yapısı
+- Otomatik dağıtım için **Docker Compose**
+- İşlem güvenli operasyonlar
+- Miktar takipli **stok yönetimi**
+- **Gelişmiş arama** özelliği (kısmi kelime eşleştirme)
 
 ---
 
@@ -26,58 +28,45 @@ Bu proje, Java geliştirici vaka çalışmasının bir parçası olarak gelişti
 ```
 src/
 └── main/java/com/lucadron
-    ├── model/       # POJO sınıfları (Book, Member, BorrowedBook)
-    ├── repository/  # JDBC repository'ler (CRUD + sorgular)
-    ├── service/     # İş mantığı (doğrulama, kurallar)
-    ├── controller/  # Konsol UI (menüler, istemler)
-    ├── i18n/        # LanguageManager + yerel ayar yönetimi
+    ├── model/       # Domain sınıfları (Book, Member, BorrowedBook)
+    ├── repository/  # Veri erişim katmanı (JDBC)
+    ├── service/     # İş mantığı & doğrulama
+    ├── controller/  # Konsol arayüzü
+    ├── i18n/        # Dil yönetimi
     └── Main.java    # Uygulama giriş noktası
 ```
 
 ---
 
-## ✅ Proje Gereksinimleri & Uygulama Durumu
+## ✅ Gereksinim Karşılama
 
-### Temel Gereksinimler (✓ Tamamlandı)
-- ✅ **Alan Sınıfları**: Book, Member ile kurucular, getter/setter, toString
-- ✅ **Kitap Ekle**: Yeni kitap girişleri oluşturma
-- ✅ **Üye Ekle**: Yeni kütüphane üyeleri kaydetme
-- ✅ **Kitap Ödünç Al**: İşlem güvenli ödünç alma sistemi
-- ✅ **Kitap İade Et**: İşlem güvenli iade sistemi
-- ✅ **Üyenin Kitaplarını Listele**: Belirli bir üyenin ödünç aldığı tüm kitapları görüntüleme
-- ✅ **Tüm Kitapları Listele**: Tüm kitap envanterini görüntüleme
+### Temel Özellikler ✓
+- ✅ **Kitap Ekle**: Stok miktarıyla yeni kitap girişi
+- ✅ **Üye Ekle**: Doğrulamalı üye kaydı
+- ✅ **Kitap Ödünç Al**: Stok yönetimli işlem güvenli ödünç alma
+- ✅ **Kitap İade Et**: Stok güncellemeli işlem güvenli iade
+- ✅ **Üyenin Kitaplarını Listele**: Üye ve kitap adlarıyla ödünç alınan kitapları görüntüleme
+- ✅ **Tüm Kitapları Listele**: Müsaitlik durumuyla tam envanter
 
-### Veritabanı Gereksinimleri (✓ Tamamlandı)
-- ✅ **PostgreSQL Veritabanı**: Tam JDBC entegrasyonu
-- ✅ **Tablolar**: `books`, `members`, `borrowed_books`
-- ✅ **Flyway Migrasyonları**: Otomatik şema yönetimi
-- ✅ **Örnek Veri**: Önceden yüklenmiş test verileri dahil
-
-### Mimari Gereksinimler (✓ Tamamlandı)
-- ✅ **Katmanlı Mimari**: model → repository → service → controller
-- ✅ **Endişelerin Ayrılması**: Net katman sınırları
-- ✅ **Profesyonel Yapı**: Üretime hazır kod organizasyonu
-
-### Bonus Özellikler (✓ Uygulandı)
-- ✅ **Girdi Doğrulama**: Kapsamlı doğrulama kuralları
+### Bonus Özellikler ✓
+- ✅ **Kısmi Arama**: Başlık veya yazara göre arama (büyük/küçük harf duyarsız)
+- ✅ **Girdi Doğrulama**: Tüm girdiler için kapsamlı doğrulama
 - ✅ **3 Kitap Limiti**: Üyeler aynı anda en fazla 3 kitap ödünç alabilir
-- ✅ **Hata Yönetimi**: Zaten ödünç alınmış kitaplar tekrar ödünç alınamaz
-- ✅ **Birim Testleri**: JUnit 5 + Mockito test kapsamı
-- ✅ **Uluslararasılaştırma**: Çoklu dil desteği (TR/EN/DE)
-- ✅ **Docker Desteği**: Konteyner ile dağıtım
-- ⚠️ **Kısmi Arama**: *Bu sürümde uygulanmadı*
+- ✅ **Stok Kontrolü**: Müsait olmayan kitaplar için hata yönetimi
+- ✅ **Birim Testleri**: Doğrulama, iş kuralları ve hata senaryolarını kapsayan 10 test
+
+### Ek Geliştirmeler ✓
+- ✅ **Stok Yönetimi**: Miktar takipli kitap başına çoklu kopya
+- ✅ **Tüm Üyeleri Listele**: Kayıtlı tüm üyeleri görüntüleme
+- ✅ **Geliştirilmiş Çıktı**: İsimlerle okunabilir ödünç alınan kitap detayları
+- ✅ **Çoklu Dil Desteği**: Tam i18n implementasyonu (TR/EN/DE)
+- ✅ **Docker Desteği**: PostgreSQL ile konteyner tabanlı dağıtım
 
 ---
 
-## 🌐 Uluslararasılaştırma (i18n)
+## 🌐 Uluslararasılaştırma
 
-Sistem **3 dili** destekler:
-
-- 🇹🇷 Türkçe
-- 🇬🇧 İngilizce
-- 🇩🇪 Almanca
-
-Başlangıçta:
+Sistem tam çevirilerle **3 dili** destekler:
 
 ```
 Select language / Sprache auswählen / Dil seçiniz:
@@ -86,76 +75,64 @@ Select language / Sprache auswählen / Dil seçiniz:
 3 - Türkçe
 ```
 
-Çeviriler şu konumda saklanır:
-
-```
-src/main/resources/messages_en.properties
-src/main/resources/messages_de.properties
-src/main/resources/messages_tr.properties
-```
+Dil dosyaları: `src/main/resources/messages_{en|de|tr}.properties`
 
 ---
 
-## 🗄️ Veritabanı & Migrasyon
+## 🗄️ Veritabanı
 
-Veritabanı **Flyway** tarafından yönetilir ve migrasyonlar uygulama başlangıcında otomatik olarak çalışır.
+**Flyway** migrasyonlarıyla yönetilen **PostgreSQL** veritabanı:
 
-Migrasyon dosyaları:
+**Tablolar:**
+- `books` (id, title, author, year, is_borrowed, quantity)
+- `members` (id, name, email)
+- `borrowed_books` (id, member_id, book_id, borrow_date)
 
-```
-src/main/resources/db/migration/V1__init_library_schema.sql
-```
+**Migrasyonlar:**
+- `V1__init_library_schema.sql` - İlk şema + örnek veri
+- `V2__add_quantity_column.sql` - Stok yönetimi özelliği
 
-Bu şunları oluşturur:
-
-- `books`
-- `members`
-- `borrowed_books`
-
-Örnek veriler otomatik olarak eklenir.
+Migrasyonlar başlangıçta otomatik çalışır.
 
 ---
 
 ## 🔧 Teknoloji Yığını
 
-| Katman | Teknoloji |
-|--------|-----------|
+| Bileşen | Teknoloji |
+|---------|-----------|
 | Dil | Java 21 |
 | Derleme Aracı | Maven |
-| Veritabanı | PostgreSQL |
-| Migrasyon | Flyway |
-| DB Erişim | JDBC |
+| Veritabanı | PostgreSQL 16 |
+| Migrasyon | Flyway 10.10.0 |
+| DB Erişimi | JDBC |
 | Test | JUnit 5 + Mockito |
-| Paketleme | Maven Shade Plugin (fat jar) |
-| Çalışma Zamanı | Docker Compose |
+| Paketleme | Maven Shade Plugin (Fat JAR) |
+| Dağıtım | Docker Compose |
 | i18n | ResourceBundle |
 
 ---
 
 ## 🚀 Uygulamayı Çalıştırma
 
-### SEÇENEK A — Docker ile Çalıştırma (test edenler için önerilir)
+### Seçenek A: Docker (Önerilen)
 
-#### 1️⃣ Konteynerleri Derle & Başlat
-
+**Her şeyi başlat:**
 ```bash
 docker compose up --build
 ```
 
-Docker şunları yapacak:
-- PostgreSQL'i başlat
-- Flyway migrasyonunu çalıştır
-- Uygulamayı konteyner içinde başlat
-- Konsol menüsünü göster
+Bu işlem:
+- PostgreSQL veritabanını başlatır
+- Flyway migrasyonlarını çalıştırır
+- Uygulamayı başlatır
+- Etkileşimli menüyü gösterir
 
-Durdurmak için:
-
+**Durdur:**
 ```bash
 docker compose down
 ```
 
-Uygulama konteyneri içinde etkileşimli çalıştırma:
-
+**Etkileşimli mod:**
 ```bash
 docker compose up -d
 docker exec -it library-app bash
@@ -164,91 +141,82 @@ java -jar app.jar
 
 ---
 
-### SEÇENEK B — Yerel Olarak Çalıştırma (Docker olmadan)
+### Seçenek B: Yerel Kurulum
 
-#### 1️⃣ JAR Derle
-
+**1. Derle:**
 ```bash
 mvn clean package
 ```
 
-Bu şunu üretir:
+**2. PostgreSQL Kur:**
+- Veritabanını manuel oluştur
 
+ ```bash
+CREATE DATABASE library_db
+CREATE USER library_user WITH PASSWORD 'StrongPassword123!';
+GRANT ALL PRIVILEGES ON DATABASE library_db TO library_user;
 ```
-target/library-management-system-1.0-SNAPSHOT.jar
+
+- `src/main/resources/db/migration/` klasöründeki migrasyon scriptlerini çalıştır
+
+**3. Yapılandır:**
+`src/main/resources/application.properties` dosyasını düzenle:
+```properties
+db.url=jdbc:postgresql://localhost:5432/library_db
+db.user=library_user
+db.password=StrongPassword123!
 ```
 
-#### 2️⃣ PostgreSQL'i manuel olarak başlat
-
-Yerel PostgreSQL örneğinizde `database/CreateDatabase.sql` dosyasını çalıştırın.
-
-Ardından:
-
+**4. Çalıştır:**
 ```bash
 java -jar target/library-management-system-1.0-SNAPSHOT.jar
 ```
 
 ---
 
-## 🧪 Birim Testleri
+## 🧪 Test
 
-Proje şunları kapsayan **5 anlamlı test senaryosu** içerir:
-
-- Doğrulama kuralları
-- Ödünç alma kısıtlamaları (3 kitap limiti)
-- Hata yönetimi (zaten ödünç alınmış kitaplar)
-- Repository etkileşimi (mock'lanmış)
-
-Test çalıştırıcı:
-
+**Tüm testleri çalıştır:**
 ```bash
 mvn test
 ```
 
----
-
-## 📌 Docker Servisleri
-
-`docker-compose.yml` şunları tanımlar:
-
-- **library-postgres** → PostgreSQL 16
-- **library-app** → Java konsol uygulaması
-
-Ortam değişkenleri varsayılan DB yapılandırmasını geçersiz kılar.
+**Test Kapsamı:**
+- Üye doğrulama (isim, email formatı)
+- Kitap doğrulama (başlık, yazar, yıl, miktar)
+- Ödünç alma kısıtlamaları (3 kitap limiti, stok müsaitliği)
+- İade işlemleri
+- Arama fonksiyonu
+- Hata yönetimi senaryoları
 
 ---
 
-## 📋 Teslimat Gereksinimleri
+## 📋 Menü Seçenekleri
 
-✅ **Tamamlanan Kontrol Listesi:**
-- ✅ Proje GitHub'da paylaşıldı
-- ✅ Detaylı talimatlar içeren README
-- ✅ Veritabanı tabloları için SQL betiği (Flyway migrasyonları)
-- ✅ Örnek başlangıç verileri dahil
-- ✅ Birim testleri uygulandı (bonus özellik)
-- ✅ Girdi doğrulama (bonus özellik)
-- ✅ 3 kitap ödünç alma limiti (bonus özellik)
-- ✅ Zaten ödünç alınmış kitaplar için hata mesajları (bonus özellik)
-- ✅ Çoklu dil desteği (ekstra özellik)
-- ✅ Docker konteynerizasyonu (ekstra özellik)
-
----
-
-## 🎁 Gereksinimlerin Ötesinde Ek Özellikler
-
-Bu uygulama temel gereksinimleri şunlarla aşmaktadır:
-
-- **Uluslararasılaştırma (i18n)**: Tam çoklu dil desteği
-- **Docker Entegrasyonu**: Tek komutla dağıtım
-- **Flyway Migrasyonları**: Profesyonel veritabanı sürümleme
-- **Fat JAR Paketleme**: Bağımsız çalıştırılabilir
-- **Üretime Hazır Yapı**: Kurumsal seviye kod organizasyonu
-- **Kapsamlı Test**: Mock'lanmış repository katmanı testleri
+```
+1 - Kitap ekle
+2 - Üye ekle
+3 - Kitap ödünç al
+4 - Kitap iade et
+5 - Üyenin ödünç aldığı kitapları listele
+6 - Tüm kitapları listele
+7 - Kitap ara (başlık veya yazara göre)
+8 - Tüm üyeleri listele
+0 - Çıkış
+```
 
 ---
 
-## 📝 Notlar
+## 📝 Teslimat Kontrol Listesi
 
-- **Kitap başlığına göre kısmi arama** mevcut sürümde uygulanmayan tek bonus özelliktir
-- Tüm temel gereksinimler ve çoğu bonus özellik başarıyla tamamlanmıştır
-- Sistem üretime hazırdır ve Java en iyi uygulamalarını takip eder
+✅ **Tüm temel gereksinimler karşılandı**  
+✅ **Tüm bonus özellikler uygulandı**  
+✅ **Tam kaynak kodlu GitHub deposu**  
+✅ **Detaylı talimatlarla README (TR/EN/DE)**  
+✅ **Veritabanı kurulumu için SQL scriptleri (Flyway migrasyonları)**  
+✅ **Örnek veriler dahil**  
+✅ **JUnit 5 + Mockito ile birim testleri**  
+✅ **Tek komutla dağıtım için Docker Compose**  
+✅ **Üretime hazır kod yapısı**
+
+---

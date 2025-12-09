@@ -9,6 +9,9 @@ public class BorrowedBook {
     private int bookId;
     private LocalDateTime borrowDate;
 
+    private String memberName;
+    private String bookTitle;
+
     public BorrowedBook() {
     }
 
@@ -57,13 +60,41 @@ public class BorrowedBook {
         this.borrowDate = borrowDate;
     }
 
+    public String getMemberName() {
+        return memberName;
+    }
+
+    public void setMemberName(String memberName) {
+        this.memberName = memberName;
+    }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
+
+    public void setBookTitle(String bookTitle) {
+        this.bookTitle = bookTitle;
+    }
+
     @Override
     public String toString() {
-        return "BorrowedBook {" +
-                "id=" + id +
-                ", memberId=" + memberId +
-                ", bookId=" + bookId +
-                ", borrowDate=" + borrowDate +
-                '}';
+        // ÖNEMLİ: Çıktıyı senin istediğin forma getiriyoruz:
+        // BorrowedBook {id=6, memberId=4(Emre Gülşen), bookId=4(Suç ve Ceza), borrowDate=...}
+        StringBuilder sb = new StringBuilder("BorrowedBook {");
+        sb.append("id=").append(id);
+
+        sb.append(", memberId=").append(memberId);
+        if (memberName != null && !memberName.isBlank()) {
+            sb.append(" (").append(memberName).append(")");
+        }
+
+        sb.append(", bookId=").append(bookId);
+        if (bookTitle != null && !bookTitle.isBlank()) {
+            sb.append(" (").append(bookTitle).append(")");
+        }
+
+        sb.append(", borrowDate=").append(borrowDate);
+        sb.append('}');
+        return sb.toString();
     }
 }

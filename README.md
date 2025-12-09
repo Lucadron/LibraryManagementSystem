@@ -8,16 +8,18 @@
 ## 🎯 Project Overview
 
 This project is a **console-based Library Management System** developed as part of a Java developer case study.  
-It demonstrates:
+It demonstrates professional Java development skills with clean architecture, database integration, and modern development practices.
 
-- Clean **layered architecture**
-- **JDBC** database integration (PostgreSQL)
+**Key Features:**
+- Clean **layered architecture** (Model → Repository → Service → Controller)
+- **JDBC** database integration with PostgreSQL
+- **Flyway** database migrations
 - **Internationalization (i18n)** support (EN/DE/TR)
 - **Unit testing** with JUnit 5 + Mockito
-- **Flyway migrations** for database schema management
-- **Docker Compose** for fully automated setup
-- Transaction-safe operations (borrow/return)
-- Professional code structure suitable for production
+- **Docker Compose** for automated deployment
+- Transaction-safe operations
+- **Stock management** with quantity tracking
+- **Advanced search** functionality (partial keyword matching)
 
 ---
 
@@ -26,58 +28,45 @@ It demonstrates:
 ```
 src/
 └── main/java/com/lucadron
-    ├── model/       # POJO classes (Book, Member, BorrowedBook)
-    ├── repository/  # JDBC repositories (CRUD + queries)
-    ├── service/     # Business logic (validation, rules)
-    ├── controller/  # Console UI (menus, prompts)
-    ├── i18n/        # LanguageManager + locale handling
+    ├── model/       # Domain classes (Book, Member, BorrowedBook)
+    ├── repository/  # Data access layer (JDBC)
+    ├── service/     # Business logic & validation
+    ├── controller/  # Console UI
+    ├── i18n/        # Language management
     └── Main.java    # Application entry point
 ```
 
 ---
 
-## ✅ Project Requirements & Implementation Status
+## ✅ Requirements Implementation
 
-### Core Requirements (✓ Completed)
-- ✅ **Domain Classes**: Book, Member with constructors, getters/setters, toString
-- ✅ **Add Book**: Create new book entries
-- ✅ **Add Member**: Register new library members
-- ✅ **Borrow Book**: Transaction-safe borrowing system
-- ✅ **Return Book**: Transaction-safe return system
-- ✅ **List Member's Books**: Display all books borrowed by a specific member
-- ✅ **List All Books**: View complete book inventory
+### Core Features ✓
+- ✅ **Add Book**: Create new book entries with stock quantity
+- ✅ **Add Member**: Register library members with validation
+- ✅ **Borrow Book**: Transaction-safe borrowing with stock management
+- ✅ **Return Book**: Transaction-safe returns with stock updates
+- ✅ **List Member's Books**: View borrowed books with member and book names
+- ✅ **List All Books**: Complete inventory with availability status
 
-### Database Requirements (✓ Completed)
-- ✅ **PostgreSQL Database**: Full JDBC integration
-- ✅ **Tables**: `books`, `members`, `borrowed_books`
-- ✅ **Flyway Migrations**: Automated schema management
-- ✅ **Sample Data**: Pre-loaded test data included
-
-### Architecture Requirements (✓ Completed)
-- ✅ **Layered Architecture**: model → repository → service → controller
-- ✅ **Separation of Concerns**: Clear layer boundaries
-- ✅ **Professional Structure**: Production-ready code organization
-
-### Bonus Features (✓ Implemented)
-- ✅ **Input Validation**: Comprehensive validation rules
+### Bonus Features ✓
+- ✅ **Partial Search**: Search books by title or author (case-insensitive)
+- ✅ **Input Validation**: Comprehensive validation for all inputs
 - ✅ **3-Book Limit**: Members can borrow maximum 3 books simultaneously
-- ✅ **Error Handling**: Already borrowed books cannot be borrowed again
-- ✅ **Unit Tests**: JUnit 5 + Mockito test coverage
-- ✅ **Internationalization**: Multi-language support (EN/DE/TR)
-- ✅ **Docker Support**: Containerized deployment
-- ⚠️ **Partial Search**: *Not implemented in this version*
+- ✅ **Stock Control**: Error handling for unavailable books
+- ✅ **Unit Tests**: 10 test cases covering validation, business rules, and error scenarios
+
+### Additional Enhancements ✓
+- ✅ **Stock Management**: Multiple copies per book with quantity tracking
+- ✅ **List All Members**: View all registered members
+- ✅ **Enhanced Output**: Human-readable borrowed book details with names
+- ✅ **Multi-language Support**: Full i18n implementation (EN/DE/TR)
+- ✅ **Docker Support**: Containerized deployment with PostgreSQL
 
 ---
 
-## 🌐 Internationalization (i18n)
+## 🌐 Internationalization
 
-The system supports **3 languages**:
-
-- 🇬🇧 English (default)
-- 🇩🇪 German
-- 🇹🇷 Turkish
-
-Upon startup:
+The system supports **3 languages** with complete translations:
 
 ```
 Select language / Sprache auswählen / Dil seçiniz:
@@ -86,76 +75,64 @@ Select language / Sprache auswählen / Dil seçiniz:
 3 - Türkçe
 ```
 
-Translations are stored under:
-
-```
-src/main/resources/messages_en.properties
-src/main/resources/messages_de.properties
-src/main/resources/messages_tr.properties
-```
+Language files: `src/main/resources/messages_{en|de|tr}.properties`
 
 ---
 
-## 🗄️ Database & Migration
+## 🗄️ Database
 
-Database is managed by **Flyway** and migrations run automatically at application startup.
+**PostgreSQL** database managed by **Flyway** migrations:
 
-Migration files:
+**Tables:**
+- `books` (id, title, author, year, is_borrowed, quantity)
+- `members` (id, name, email)
+- `borrowed_books` (id, member_id, book_id, borrow_date)
 
-```
-src/main/resources/db/migration/V1__init_library_schema.sql
-```
+**Migrations:**
+- `V1__init_library_schema.sql` - Initial schema + sample data
+- `V2__add_quantity_column.sql` - Stock management feature
 
-This creates:
-
-- `books`
-- `members`
-- `borrowed_books`
-
-Sample data is inserted automatically.
+Migrations run automatically at startup.
 
 ---
 
-## 🔧 Tech Stack
+## 🔧 Technology Stack
 
-| Layer | Technology |
-|-------|------------|
+| Component | Technology |
+|-----------|------------|
 | Language | Java 21 |
 | Build Tool | Maven |
-| Database | PostgreSQL |
-| Migration | Flyway |
+| Database | PostgreSQL 16 |
+| Migration | Flyway 10.10.0 |
 | DB Access | JDBC |
 | Testing | JUnit 5 + Mockito |
-| Packaging | Maven Shade Plugin (fat jar) |
-| Runtime | Docker Compose |
+| Packaging | Maven Shade Plugin (Fat JAR) |
+| Deployment | Docker Compose |
 | i18n | ResourceBundle |
 
 ---
 
 ## 🚀 Running the Application
 
-### OPTION A — Run with Docker (recommended for testers)
+### Option A: Docker (Recommended)
 
-#### 1️⃣ Build & Start Containers
-
+**Start everything:**
 ```bash
 docker compose up --build
 ```
 
-Docker will:
-- Start PostgreSQL
-- Run Flyway migration
-- Start the application inside a container
-- Show the console menu
+This will:
+- Start PostgreSQL database
+- Run Flyway migrations
+- Launch the application
+- Display the interactive menu
 
-To stop:
-
+**Stop:**
 ```bash
 docker compose down
 ```
 
-Running interactively inside the app container:
-
+**Interactive mode:**
 ```bash
 docker compose up -d
 docker exec -it library-app bash
@@ -164,92 +141,81 @@ java -jar app.jar
 
 ---
 
-### OPTION B — Run Locally (without Docker)
+### Option B: Local Setup
 
-#### 1️⃣ Build JAR
-
+**1. Build:**
 ```bash
 mvn clean package
 ```
 
-This produces:
-
+**2. Setup PostgreSQL:**
+- Create database manually
+```bash
+  CREATE DATABASE library_db
+  CREATE USER library_user WITH PASSWORD 'StrongPassword123!';
+GRANT ALL PRIVILEGES ON DATABASE library_db TO library_user;
 ```
-target/library-management-system-1.0-SNAPSHOT.jar
+
+- Run migration scripts from `src/main/resources/db/migration/`
+
+**3. Configure:**
+Edit `src/main/resources/application.properties`:
+```properties
+db.url=jdbc:postgresql://localhost:5432/library_db
+db.user=library_user
+db.password=StrongPassword123!
 ```
 
-#### 2️⃣ Start PostgreSQL manually
-
-Run `database/CreateDatabase.sql` in your local PostgreSQL instance.
-
-Then:
-
+**4. Run:**
 ```bash
 java -jar target/library-management-system-1.0-SNAPSHOT.jar
 ```
 
 ---
 
-## 🧪 Unit Tests
+## 🧪 Testing
 
-The project includes **5 meaningful test cases** covering:
-
-- Validation rules  
-- Borrowing constraints (3-book limit)
-- Error handling (already borrowed books)
-- Repository interaction (mocked)  
-
-Test runner:
-
+**Run all tests:**
 ```bash
 mvn test
 ```
 
----
-
-## 📌 Docker Services
-
-`docker-compose.yml` defines:
-
-- **library-postgres** → PostgreSQL 16
-- **library-app** → Java console application
-
-Environment variables override default DB config.
+**Test Coverage:**
+- Member validation (name, email format)
+- Book validation (title, author, year, quantity)
+- Borrow constraints (3-book limit, stock availability)
+- Return operations
+- Search functionality
+- Error handling scenarios
 
 ---
 
-## 📋 Delivery Requirements
+## 📋 Menu Options
 
-✅ **Completed Checklist:**
-- ✅ Project shared on GitHub
-- ✅ README with detailed instructions
-- ✅ SQL script for database tables (Flyway migrations)
-- ✅ Sample initial data included
-- ✅ Unit tests implemented (bonus feature)
-- ✅ Input validation (bonus feature)
-- ✅ 3-book borrowing limit (bonus feature)
-- ✅ Error messages for already borrowed books (bonus feature)
-- ✅ Multi-language support (extra feature)
-- ✅ Docker containerization (extra feature)
-
----
-
-## 🎁 Additional Features Beyond Requirements
-
-This implementation exceeds the base requirements with:
-
-- **Internationalization (i18n)**: Full multi-language support
-- **Docker Integration**: One-command deployment
-- **Flyway Migrations**: Professional database versioning
-- **Fat JAR Packaging**: Standalone executable
-- **Production-Ready Structure**: Enterprise-level code organization
-- **Comprehensive Testing**: Mocked repository layer tests
-
----
-
-## 📝 Notes
-
-- **Partial search by book title** is the only bonus feature not implemented in the current version
-- All core requirements and most bonus features have been successfully completed
-- The system is production-ready and follows Java best practices
 ```
+1 - Add book
+2 - Add member
+3 - Borrow book
+4 - Return book
+5 - List books borrowed by member
+6 - List all books
+7 - Search books (by title or author)
+8 - List all members
+0 - Exit
+```
+
+---
+
+## 📝 Delivery Checklist
+
+✅ **All core requirements implemented**  
+✅ **All bonus features implemented**  
+✅ **GitHub repository with complete source code**  
+✅ **README with detailed instructions (EN/DE/TR)**  
+✅ **SQL scripts for database setup (Flyway migrations)**  
+✅ **Sample data included**  
+✅ **Unit tests with JUnit 5 + Mockito**  
+✅ **Docker Compose for one-command deployment**  
+✅ **Production-ready code structure**
+
+---

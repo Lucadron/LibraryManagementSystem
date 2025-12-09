@@ -8,16 +8,18 @@
 ## 🎯 Projektübersicht
 
 Dieses Projekt ist ein **konsolenbasiertes Bibliotheksverwaltungssystem**, das als Teil einer Java-Entwickler-Fallstudie entwickelt wurde.  
-Es demonstriert:
+Es demonstriert professionelle Java-Entwicklungsfähigkeiten mit sauberer Architektur, Datenbankintegration und modernen Entwicklungspraktiken.
 
-- Saubere **Schichtenarchitektur**
-- **JDBC** Datenbankintegration (PostgreSQL)
+**Hauptmerkmale:**
+- Saubere **Schichtenarchitektur** (Model → Repository → Service → Controller)
+- **JDBC** Datenbankintegration mit PostgreSQL
+- **Flyway** Datenbank-Migrationen
 - **Internationalisierung (i18n)** Unterstützung (DE/EN/TR)
 - **Unit-Tests** mit JUnit 5 + Mockito
-- **Flyway-Migrationen** für Datenbank-Schema-Verwaltung
-- **Docker Compose** für vollautomatisches Setup
-- Transaktionssichere Ausleihe-/Rückgabe-Operationen
-- Professionelle, produktionsreife Codestruktur
+- **Docker Compose** für automatisierte Bereitstellung
+- Transaktionssichere Operationen
+- **Lagerverwaltung** mit Mengenverfolgung
+- **Erweiterte Suchfunktion** (teilweise Schlüsselwortübereinstimmung)
 
 ---
 
@@ -26,58 +28,45 @@ Es demonstriert:
 ```
 src/
 └── main/java/com/lucadron
-    ├── model/       # POJO-Klassen (Book, Member, BorrowedBook)
-    ├── repository/  # JDBC-Repositories (CRUD + Abfragen)
-    ├── service/     # Geschäftslogik (Validierung, Regeln)
-    ├── controller/  # Konsolen-UI (Menüs, Eingabeaufforderungen)
-    ├── i18n/        # LanguageManager + Locale-Verwaltung
+    ├── model/       # Domain-Klassen (Book, Member, BorrowedBook)
+    ├── repository/  # Datenzugriffsschicht (JDBC)
+    ├── service/     # Geschäftslogik & Validierung
+    ├── controller/  # Konsolen-UI
+    ├── i18n/        # Sprachverwaltung
     └── Main.java    # Anwendungseinstiegspunkt
 ```
 
 ---
 
-## ✅ Projektanforderungen & Implementierungsstatus
+## ✅ Anforderungserfüllung
 
-### Kernanforderungen (✓ Abgeschlossen)
-- ✅ **Domain-Klassen**: Book, Member mit Konstruktoren, Gettern/Settern, toString
-- ✅ **Buch hinzufügen**: Neue Bucheinträge erstellen
-- ✅ **Mitglied hinzufügen**: Neue Bibliotheksmitglieder registrieren
-- ✅ **Buch ausleihen**: Transaktionssicheres Ausleihsystem
-- ✅ **Buch zurückgeben**: Transaktionssicheres Rückgabesystem
-- ✅ **Mitgliedsbücher auflisten**: Alle von einem bestimmten Mitglied ausgeliehenen Bücher anzeigen
-- ✅ **Alle Bücher auflisten**: Vollständiges Bücherinventar anzeigen
+### Kernfunktionen ✓
+- ✅ **Buch hinzufügen**: Neue Bucheinträge mit Lagerbestand erstellen
+- ✅ **Mitglied hinzufügen**: Bibliotheksmitglieder mit Validierung registrieren
+- ✅ **Buch ausleihen**: Transaktionssicheres Ausleihen mit Lagerverwaltung
+- ✅ **Buch zurückgeben**: Transaktionssichere Rückgaben mit Lageraktualisierung
+- ✅ **Mitgliedsbücher auflisten**: Ausgeliehene Bücher mit Mitglieds- und Buchnamen anzeigen
+- ✅ **Alle Bücher auflisten**: Vollständiges Inventar mit Verfügbarkeitsstatus
 
-### Datenbankanforderungen (✓ Abgeschlossen)
-- ✅ **PostgreSQL-Datenbank**: Vollständige JDBC-Integration
-- ✅ **Tabellen**: `books`, `members`, `borrowed_books`
-- ✅ **Flyway-Migrationen**: Automatische Schema-Verwaltung
-- ✅ **Beispieldaten**: Vorinstallierte Testdaten enthalten
-
-### Architekturanforderungen (✓ Abgeschlossen)
-- ✅ **Schichtenarchitektur**: model → repository → service → controller
-- ✅ **Trennung der Zuständigkeiten**: Klare Schichtgrenzen
-- ✅ **Professionelle Struktur**: Produktionsreife Code-Organisation
-
-### Bonus-Funktionen (✓ Implementiert)
-- ✅ **Eingabevalidierung**: Umfassende Validierungsregeln
+### Bonus-Funktionen ✓
+- ✅ **Teilsuche**: Bücher nach Titel oder Autor suchen (Groß-/Kleinschreibung unabhängig)
+- ✅ **Eingabevalidierung**: Umfassende Validierung für alle Eingaben
 - ✅ **3-Bücher-Limit**: Mitglieder können maximal 3 Bücher gleichzeitig ausleihen
-- ✅ **Fehlerbehandlung**: Bereits ausgeliehene Bücher können nicht erneut ausgeliehen werden
-- ✅ **Unit-Tests**: JUnit 5 + Mockito Testabdeckung
-- ✅ **Internationalisierung**: Mehrsprachige Unterstützung (DE/EN/TR)
-- ✅ **Docker-Unterstützung**: Containerisierte Bereitstellung
-- ⚠️ **Teilsuche**: *In dieser Version nicht implementiert*
+- ✅ **Lagerkontrolle**: Fehlerbehandlung für nicht verfügbare Bücher
+- ✅ **Unit-Tests**: 10 Testfälle zur Abdeckung von Validierung, Geschäftsregeln und Fehlerszenarien
+
+### Zusätzliche Verbesserungen ✓
+- ✅ **Lagerverwaltung**: Mehrere Exemplare pro Buch mit Mengenverfolgung
+- ✅ **Alle Mitglieder auflisten**: Alle registrierten Mitglieder anzeigen
+- ✅ **Verbesserte Ausgabe**: Lesbare Details ausgeliehener Bücher mit Namen
+- ✅ **Mehrsprachige Unterstützung**: Vollständige i18n-Implementierung (DE/EN/TR)
+- ✅ **Docker-Unterstützung**: Containerisierte Bereitstellung mit PostgreSQL
 
 ---
 
-## 🌐 Internationalisierung (i18n)
+## 🌐 Internationalisierung
 
-Das System unterstützt **3 Sprachen**:
-
-- 🇩🇪 Deutsch
-- 🇬🇧 Englisch
-- 🇹🇷 Türkisch
-
-Beim Start:
+Das System unterstützt **3 Sprachen** mit vollständigen Übersetzungen:
 
 ```
 Select language / Sprache auswählen / Dil seçiniz:
@@ -86,33 +75,24 @@ Select language / Sprache auswählen / Dil seçiniz:
 3 - Türkçe
 ```
 
-Übersetzungen sind gespeichert unter:
-
-```
-src/main/resources/messages_en.properties
-src/main/resources/messages_de.properties
-src/main/resources/messages_tr.properties
-```
+Sprachdateien: `src/main/resources/messages_{en|de|tr}.properties`
 
 ---
 
-## 🗄️ Datenbank & Migration
+## 🗄️ Datenbank
 
-Die Datenbank wird von **Flyway** verwaltet und Migrationen laufen automatisch beim Anwendungsstart.
+**PostgreSQL** Datenbank verwaltet durch **Flyway** Migrationen:
 
-Migrationsdateien:
+**Tabellen:**
+- `books` (id, title, author, year, is_borrowed, quantity)
+- `members` (id, name, email)
+- `borrowed_books` (id, member_id, book_id, borrow_date)
 
-```
-src/main/resources/db/migration/V1__init_library_schema.sql
-```
+**Migrationen:**
+- `V1__init_library_schema.sql` - Initiales Schema + Beispieldaten
+- `V2__add_quantity_column.sql` - Lagerverwaltungsfunktion
 
-Dies erstellt:
-
-- `books`
-- `members`
-- `borrowed_books`
-
-Beispieldaten werden automatisch eingefügt.
+Migrationen laufen automatisch beim Start.
 
 ---
 
@@ -122,40 +102,37 @@ Beispieldaten werden automatisch eingefügt.
 |---------|-------------|
 | Sprache | Java 21 |
 | Build-Tool | Maven |
-| Datenbank | PostgreSQL |
-| Migration | Flyway |
+| Datenbank | PostgreSQL 16 |
+| Migration | Flyway 10.10.0 |
 | DB-Zugriff | JDBC |
 | Testing | JUnit 5 + Mockito |
 | Packaging | Maven Shade Plugin (Fat JAR) |
-| Laufzeit | Docker Compose |
+| Bereitstellung | Docker Compose |
 | i18n | ResourceBundle |
 
 ---
 
 ## 🚀 Anwendung ausführen
 
-### OPTION A — Mit Docker ausführen (empfohlen für Tester)
+### Option A: Docker (Empfohlen)
 
-#### 1️⃣ Container erstellen & starten
-
+**Alles starten:**
 ```bash
 docker compose up --build
 ```
 
-Docker wird:
-- PostgreSQL starten
-- Flyway-Migration ausführen
-- Anwendung innerhalb eines Containers starten
-- Konsolenmenü anzeigen
+Dies wird:
+- PostgreSQL-Datenbank starten
+- Flyway-Migrationen ausführen
+- Anwendung starten
+- Interaktives Menü anzeigen
 
-Zum Stoppen:
-
+**Stoppen:**
 ```bash
 docker compose down
 ```
 
-Interaktiv im App-Container ausführen:
-
+**Interaktiver Modus:**
 ```bash
 docker compose up -d
 docker exec -it library-app bash
@@ -164,91 +141,82 @@ java -jar app.jar
 
 ---
 
-### OPTION B — Lokal ausführen (ohne Docker)
+### Option B: Lokales Setup
 
-#### 1️⃣ JAR erstellen
-
+**1. Build:**
 ```bash
 mvn clean package
 ```
 
-Dies erzeugt:
+**2. PostgreSQL einrichten:**
+- Datenbank manuell erstellen
 
+```bash
+CREATE DATABASE library_db
+CREATE USER library_user WITH PASSWORD 'StrongPassword123!';
+GRANT ALL PRIVILEGES ON DATABASE library_db TO library_user;
 ```
-target/library-management-system-1.0-SNAPSHOT.jar
+
+- Migrationsskripte aus `src/main/resources/db/migration/` ausführen
+
+**3. Konfigurieren:**
+`src/main/resources/application.properties` bearbeiten:
+```properties
+db.url=jdbc:postgresql://localhost:5432/library_db
+db.user=library_user
+db.password=StrongPassword123!
 ```
 
-#### 2️⃣ PostgreSQL manuell starten
-
-Führen Sie `database/CreateDatabase.sql` in Ihrer lokalen PostgreSQL-Instanz aus.
-
-Dann:
-
+**4. Ausführen:**
 ```bash
 java -jar target/library-management-system-1.0-SNAPSHOT.jar
 ```
 
 ---
 
-## 🧪 Unit-Tests
+## 🧪 Testing
 
-Das Projekt enthält **5 aussagekräftige Testfälle**, die Folgendes abdecken:
-
-- Validierungsregeln
-- Ausleihbeschränkungen (3-Bücher-Limit)
-- Fehlerbehandlung (bereits ausgeliehene Bücher)
-- Repository-Interaktion (gemockt)
-
-Test-Runner:
-
+**Alle Tests ausführen:**
 ```bash
 mvn test
 ```
 
----
-
-## 📌 Docker-Dienste
-
-`docker-compose.yml` definiert:
-
-- **library-postgres** → PostgreSQL 16
-- **library-app** → Java-Konsolenanwendung
-
-Umgebungsvariablen überschreiben die Standard-DB-Konfiguration.
+**Testabdeckung:**
+- Mitgliedsvalidierung (Name, E-Mail-Format)
+- Buchvalidierung (Titel, Autor, Jahr, Menge)
+- Ausleihbeschränkungen (3-Bücher-Limit, Lagerverfügbarkeit)
+- Rückgabeoperationen
+- Suchfunktionalität
+- Fehlerbehandlungsszenarien
 
 ---
 
-## 📋 Lieferanforderungen
+## 📋 Menüoptionen
 
-✅ **Abgeschlossene Checkliste:**
-- ✅ Projekt auf GitHub geteilt
-- ✅ README mit detaillierten Anweisungen
-- ✅ SQL-Skript für Datenbanktabellen (Flyway-Migrationen)
-- ✅ Beispiel-Anfangsdaten enthalten
-- ✅ Unit-Tests implementiert (Bonus-Funktion)
-- ✅ Eingabevalidierung (Bonus-Funktion)
-- ✅ 3-Bücher-Ausleihlimit (Bonus-Funktion)
-- ✅ Fehlermeldungen für bereits ausgeliehene Bücher (Bonus-Funktion)
-- ✅ Mehrsprachige Unterstützung (Zusatzfunktion)
-- ✅ Docker-Containerisierung (Zusatzfunktion)
-
----
-
-## 🎁 Zusätzliche Funktionen über die Anforderungen hinaus
-
-Diese Implementierung übertrifft die Grundanforderungen mit:
-
-- **Internationalisierung (i18n)**: Vollständige mehrsprachige Unterstützung
-- **Docker-Integration**: Bereitstellung mit einem Befehl
-- **Flyway-Migrationen**: Professionelle Datenbankversionierung
-- **Fat JAR-Packaging**: Eigenständige ausführbare Datei
-- **Produktionsreife Struktur**: Code-Organisation auf Unternehmensniveau
-- **Umfassende Tests**: Getestete Repository-Schicht mit Mocks
+```
+1 - Buch hinzufügen
+2 - Mitglied hinzufügen
+3 - Buch ausleihen
+4 - Buch zurückgeben
+5 - Von Mitglied ausgeliehene Bücher auflisten
+6 - Alle Bücher auflisten
+7 - Bücher suchen (nach Titel oder Autor)
+8 - Alle Mitglieder auflisten
+0 - Beenden
+```
 
 ---
 
-## 📝 Hinweise
+## 📝 Lieferungs-Checkliste
 
-- **Teilsuche nach Buchtitel** ist die einzige Bonus-Funktion, die in der aktuellen Version nicht implementiert wurde
-- Alle Kernanforderungen und die meisten Bonus-Funktionen wurden erfolgreich abgeschlossen
-- Das System ist produktionsreif und folgt Java-Best-Practices
+✅ **Alle Kernanforderungen implementiert**  
+✅ **Alle Bonus-Funktionen implementiert**  
+✅ **GitHub-Repository mit vollständigem Quellcode**  
+✅ **README mit detaillierten Anweisungen (DE/EN/TR)**  
+✅ **SQL-Skripte für Datenbank-Setup (Flyway-Migrationen)**  
+✅ **Beispieldaten enthalten**  
+✅ **Unit-Tests mit JUnit 5 + Mockito**  
+✅ **Docker Compose für Ein-Befehl-Bereitstellung**  
+✅ **Produktionsreife Code-Struktur**
+
+---

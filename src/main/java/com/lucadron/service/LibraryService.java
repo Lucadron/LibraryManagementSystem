@@ -23,15 +23,22 @@ public class LibraryService {
 
     public Member addMember(String name, String email) {
         validateMemberInput(name, email);
-
         Member member = new Member(name, email);
         return memberRepo.addMember(member);
     }
 
     public Book addBook(String title, String author, int year) {
-        validateBookInput(title, author, year);
+        return addBook(title, author, year, 1);
+    }
 
-        Book book = new Book(title, author, year);
+    public Book addBook(String title, String author, int year, int quantity) {
+        validateBookInput(title, author, year, quantity);
+
+        if (quantity < 1) {
+            throw new RuntimeException(LanguageManager.get("error.book.quantity"));
+        }
+
+        Book book = new Book(title, author, year, quantity);
         return bookRepo.addBook(book);
     }
 
@@ -49,8 +56,8 @@ public class LibraryService {
                 throw new RuntimeException(LanguageManager.format("error.book.notfound", bookId));
             }
 
-            if (book.isBorrowed()) {
-                throw new RuntimeException(LanguageManager.format("error.book.alreadyBorrowed", bookId));
+            if (book.getQuantity() <= 0) {
+                throw new RuntimeException(LanguageManager.get("error.book.noStock"));
             }
 
             List<BorrowedBook> borrowedList = borrowRepo.getBorrowedBooksByMemberId(memberId);
@@ -61,16 +68,12 @@ public class LibraryService {
             BorrowedBook record = new BorrowedBook(memberId, bookId, LocalDateTime.now());
             borrowRepo.addBorrowRecord(record);
 
-            bookRepo.updateBorrowedStatus(bookId, true);
+            bookRepo.updateQuantity(bookId, book.getQuantity() - 1);
 
             connection.commit();
 
         } catch (Exception e) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                System.err.println(LanguageManager.get("error.rollback") + ": " + ex.getMessage());
-            }
+            rollbackQuietly();
             throw new RuntimeException(LanguageManager.format("error.borrow.failed", e.getMessage()));
         }
     }
@@ -84,31 +87,52 @@ public class LibraryService {
                 throw new RuntimeException(LanguageManager.format("error.book.notfound", bookId));
             }
 
-            if (!book.isBorrowed()) {
-                throw new RuntimeException(LanguageManager.get("error.book.notBorrowed"));
-            }
-
             borrowRepo.deleteBorrowRecord(memberId, bookId);
-            bookRepo.updateBorrowedStatus(bookId, false);
+
+            bookRepo.updateQuantity(bookId, book.getQuantity() + 1);
 
             connection.commit();
 
         } catch (Exception e) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                System.err.println(LanguageManager.get("error.rollback") + ": " + ex.getMessage());
-            }
+            rollbackQuietly();
             throw new RuntimeException(LanguageManager.format("error.return.failed", e.getMessage()));
         }
     }
 
     public List<BorrowedBook> listBorrowedBooksByMember(int memberId) {
-        return borrowRepo.getBorrowedBooksByMemberId(memberId);
+        List<BorrowedBook> list = borrowRepo.getBorrowedBooksByMemberId(memberId);
+
+        for (BorrowedBook bb : list) {
+            Member member = memberRepo.getMemberById(bb.getMemberId());
+            if (member != null) bb.setMemberName(member.getName());
+
+            Book book = bookRepo.getBookById(bb.getBookId());
+            if (book != null) bb.setBookTitle(book.getTitle());
+        }
+
+        return list;
     }
 
     public List<Book> listAllBooks() {
         return bookRepo.getAllBooks();
+    }
+
+    public List<Member> listAllMembers() {
+        List<Member> members = memberRepo.getAllMembers();
+
+        if (members == null || members.isEmpty()) {
+            throw new RuntimeException(LanguageManager.get("list.members.none"));
+        }
+
+        return members;
+    }
+
+    public List<Book> searchBooks(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            throw new RuntimeException(LanguageManager.get("error.search.empty"));
+        }
+
+        return bookRepo.searchBooks(keyword);
     }
 
     private void validateMemberInput(String name, String email) {
@@ -123,7 +147,7 @@ public class LibraryService {
         }
     }
 
-    private void validateBookInput(String title, String author, int year) {
+    private void validateBookInput(String title, String author, int year, int quantity) {
         if (title == null || title.trim().isEmpty()) {
             throw new RuntimeException(LanguageManager.get("error.validation.bookTitleEmpty"));
         }
@@ -133,5 +157,12 @@ public class LibraryService {
         if (year < 0 || year > LocalDateTime.now().getYear()) {
             throw new RuntimeException(LanguageManager.get("error.validation.bookYear"));
         }
+        if (quantity < 1) {
+            throw new RuntimeException(LanguageManager.get("error.book.quantity"));
+        }
+    }
+
+    private void rollbackQuietly() {
+        try { connection.rollback(); } catch (SQLException ignored) {}
     }
 }
