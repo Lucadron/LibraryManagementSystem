@@ -35,6 +35,7 @@ public class LibraryController {
                     case "4" -> returnBook();
                     case "5" -> listBorrowedByMember();
                     case "6" -> listAllBooks();
+                    case "7" -> searchBooksInteractive();
                     case "0" -> exitProgram();
                     default -> System.out.println(RED + "X| " + LanguageManager.get("error.invalid.choice") + RESET);
                 }
@@ -52,6 +53,7 @@ public class LibraryController {
         System.out.println("4 - " + LanguageManager.get("menu.option.returnBook"));
         System.out.println("5 - " + LanguageManager.get("menu.option.listBorrowedByMember"));
         System.out.println("6 - " + LanguageManager.get("menu.option.listAllBooks"));
+        System.out.println("7 - " + LanguageManager.get("menu.option.searchBooks"));
         System.out.println("0 - " + LanguageManager.get("menu.option.exit"));
     }
 
@@ -135,6 +137,48 @@ public class LibraryController {
 
         List<Book> books = service.listAllBooks();
         books.forEach(book -> System.out.println(CYAN + book + RESET));
+    }
+
+    private void searchBooksInteractive() {
+        System.out.println("\n " + LanguageManager.get("search.header"));
+
+        System.out.print(LanguageManager.get("search.prompt.keyword") + " ");
+        String keyword = scanner.nextLine();
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            System.out.println(YELLOW + "!| " + LanguageManager.get("error.validation.searchKeywordEmpty") + RESET);
+            return;
+        }
+
+        List<Book> results = service.searchBooks(keyword);
+
+        if (results.isEmpty()) {
+            System.out.println(YELLOW + "!| " + LanguageManager.get("search.result.none") + RESET);
+            return;
+        }
+
+        System.out.println(CYAN + LanguageManager.get("search.result.header") + RESET);
+
+        for (Book book : results) {
+            // Durum bilgisini dilden bağımsız sabit yerine i18n ile yazıyoruz
+            String statusKey = book.isBorrowed()
+                    ? "book.status.borrowed"
+                    : "book.status.available";
+
+            String statusLabel = LanguageManager.get(statusKey);
+
+            System.out.println(
+                    CYAN +
+                            "Book {" +
+                            "id=" + book.getId() +
+                            ", title='" + book.getTitle() + '\'' +
+                            ", author='" + book.getAuthor() + '\'' +
+                            ", year=" + book.getYear() +
+                            ", status=" + statusLabel +
+                            '}' +
+                            RESET
+            );
+        }
     }
 
     private void exitProgram() {
