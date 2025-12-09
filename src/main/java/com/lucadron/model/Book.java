@@ -7,23 +7,26 @@ public class Book {
     private String author;
     private int year;
     private boolean isBorrowed;
+    private int quantity;
 
     public Book() {
     }
 
-    public Book(int id, String title, String author, int year, boolean isBorrowed) {
+    public Book(int id, String title, String author, int year, boolean isBorrowed, int quantity) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.year = year;
         this.isBorrowed = isBorrowed;
+        this.quantity = quantity;
     }
 
-    public Book(String title, String author, int year) {
+    public Book(String title, String author, int year, int quantity) {
         this.title = title;
         this.author = author;
         this.year = year;
-        this.isBorrowed = false; // default
+        this.isBorrowed = false;
+        this.quantity = quantity;
     }
 
     public int getId() {
@@ -66,6 +69,14 @@ public class Book {
         isBorrowed = borrowed;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     @Override
     public String toString() {
         return "Book {" +
@@ -73,6 +84,7 @@ public class Book {
                 ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
                 ", year=" + year +
+                ", quantity=" + quantity +
                 ", isBorrowed=" + isBorrowed +
                 '}';
     }
