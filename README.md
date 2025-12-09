@@ -1,34 +1,38 @@
-# 📚 Library Management System (Java Console Application)
+# 📚 Library Management System (Java + PostgreSQL + Docker)
 
-[🇹🇷 Türkçe Doküman](README.tr.md)  
-[🇩🇪 Deutsche Dokumentation](README.de.md)
+**Languages:**  
+[🇹🇷 Türkçe](README.tr.md) • [🇩🇪 Deutsch](README.de.md)
 
 ---
 
-## 🎯 Project Overview
+## 🎯 Overview
 
-This project is a **console-based Library Management System** developed as part of a Java developer case study.  
-It demonstrates:
+This is a **console-based Library Management System** built with **Java 21**, **JDBC**, **PostgreSQL**, **Flyway migrations**,  
+and **Docker Compose** for fully automated setup.
 
-- Clean **layered architecture**
-- **JDBC** database integration (PostgreSQL)
-- **Internationalization (i18n)** support (EN/DE/TR)
-- **Unit testing** with JUnit 5 + Mockito
-- Transaction-safe operations (borrow/return)
-- Professional code structure suitable for production
+The system supports:
+
+- Clean *layered architecture*
+- PostgreSQL with automatic schema migration (Flyway)
+- Multi-language console UI (EN / DE / TR)
+- Transaction-safe borrow/return operations
+- Unit tests (JUnit 5 + Mockito)
+- Fat JAR packaging via Maven Shade Plugin
 
 ---
 
 ## 🏗️ Architecture
 
+```bash
 src/
 └── main/java/com/lucadron
-├── model/ # POJO classes (Book, Member, BorrowedBook)
-├── repository/ # JDBC repositories (CRUD + queries)
-├── service/ # Business logic (validation, rules)
-├── controller/ # Console UI (menus, prompts)
-├── i18n/ # LanguageManager + locale handling
+├── model/ # Book, Member, BorrowedBook
+├── repository/ # JDBC repositories
+├── service/ # Business logic + validation
+├── controller/ # Console menu
+├── i18n/ # Language manager
 └── Main.java # Application entry point
+```
 
 ---
 
@@ -36,85 +40,134 @@ src/
 
 The system supports **3 languages**:
 
-- 🇬🇧 English (default)
-- 🇩🇪 German
-- 🇹🇷 Turkish
-
-Upon startup:
-
-Select language / Sprache auswählen / Dil seçiniz:
 1 - English
 2 - Deutsch
 3 - Türkçe
 
-Translations are stored under:
+Language files are located in:
 
+```bash
 src/main/resources/messages_en.properties
 src/main/resources/messages_de.properties
 src/main/resources/messages_tr.properties
-
-
+```
 ---
 
-## 🗄️ Database Setup (PostgreSQL)
+## 🗄️ Database & Migration
 
-Run the following SQL script:
+Database is managed by **Flyway** and migrations run automatically at application startup.
 
-database/init.sql
+Migration files:
 
+```bash
+src/main/resources/db/migration/V1__init_library_schema.sql
+```
 
-Tables created:
+This creates:
 
 - `books`
 - `members`
 - `borrowed_books`
 
-Sample data is inserted automatically.
-
----
-
-## 🔧 Tech Stack
-
-| Layer | Technology |
-|-------|------------|
-| Language | Java 21 |
-| Build Tool | Maven |
-| Database | PostgreSQL |
-| DB Access | JDBC |
-| Testing | JUnit 5 + Mockito |
-| Packaging | Maven Shade Plugin (fat jar) |
-| i18n | ResourceBundle |
-
----
-
-## 🧪 Unit Tests
-
-The project includes **5 meaningful test cases** covering:
-
-- Validation rules  
-- Borrowing constraints  
-- Error handling  
-- Repository interaction (mocked)  
-
-Test runner:
-
-```
-mvn test
-```
-
 ---
 
 ## 🚀 Running the Application
 
-### Build:
+## OPTION A — Run with Docker (recommended for testers)
+
+### 1️⃣ Build & Start Containers
+
+```bash
+docker compose up --build
+```
+
+Docker will:
+
+Start PostgreSQL
+
+Run Flyway migration
+
+Start the application inside a container
+
+Show the console menu
+
+To stop:
+
+```bash
+docker compose down
+```
+Running interactively inside the app container:
+
+```bash
+docker compose up -d
+docker exec -it library-app bash
+java -jar app.jar
+```
+
+---
+
+OPTION B — Run Locally (without Docker)
+### 1️⃣ Build JAR
 
 ```bash
 mvn clean package
 ```
 
-### Run:
+This produces:
+
+```bash
+target/library-management-system-1.0-SNAPSHOT.jar
+```
+---
+
+### 2️⃣ Start PostgreSQL manually
+Run database/CreateDatabase.sql in your local PostgreSQL instance.
+
+Then:
 
 ```bash
 java -jar target/library-management-system-1.0-SNAPSHOT.jar
 ```
+---
 
+## 🧪 Unit Tests
+Run:
+
+```bash
+mvn test
+```
+
+Includes:
+
+Borrowing rules
+
+Error handling
+
+Validation logic
+
+Repository mocking
+
+---
+
+## 🛠️ Technologies
+| Layer | Technology |
+|-------|------------|
+| Language | Java 21 |
+| Build Tool | Maven |
+| Database | PostgreSQL |
+| Migration | Flyway |
+| DB Access | JDBC |
+| Testing | JUnit 5 + Mockito |
+| Packaging | Maven Shade Plugin |
+| Runtime | Docker Compose |
+| i18n | ResourceBundle |
+---
+
+## 📌 Docker Services
+docker-compose.yml defines:
+
+library-postgres → PostgreSQL 16
+
+library-app → Java console application
+
+Environment variables override default DB config.
