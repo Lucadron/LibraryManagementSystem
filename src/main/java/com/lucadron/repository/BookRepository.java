@@ -115,6 +115,28 @@ public class BookRepository {
         return books;
     }
 
+    public List<Book> searchBooksByKeyword(String keyword) {
+        String sql = "SELECT * FROM books WHERE LOWER(title) LIKE LOWER(?) OR LOWER(author) LIKE LOWER(?)";
+
+        List<Book> results = new ArrayList<>();
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            String pattern = "%" + keyword + "%";
+            stmt.setString(1, pattern);
+            stmt.setString(2, pattern);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                results.add(mapToBook(rs));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Book searching error: " + e.getMessage());
+        }
+
+        return results;
+    }
+
     public void updateBorrowedStatus(int bookId, boolean isBorrowed) {
         String sql = "UPDATE books SET is_borrowed = ? WHERE id = ?";
 
