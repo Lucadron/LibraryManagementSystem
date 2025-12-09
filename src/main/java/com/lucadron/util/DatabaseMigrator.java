@@ -21,7 +21,7 @@ public class DatabaseMigrator {
                 password = "StrongPassword123!";
             }
 
-            System.out.println("🔄 Flyway migration baslatiliyor...");
+            System.out.println("🔄 Flyway migration starting...");
             System.out.println("   URL: " + url);
 
             Flyway flyway = Flyway.configure()
