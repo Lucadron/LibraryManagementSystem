@@ -28,10 +28,6 @@ public class BorrowedBook {
         this.borrowDate = borrowDate;
     }
 
-
-
-    // ---------------- Getters & Setters ----------------
-
     public int getId() {
         return id;
     }
@@ -82,11 +78,23 @@ public class BorrowedBook {
 
     @Override
     public String toString() {
-        return "BorrowedBook {" +
-                "id=" + id +
-                ", memberId=" + memberId + "(" + memberName + ")" +
-                ", bookId=" + bookId + "(" + bookTitle + ")" +
-                ", borrowDate=" + borrowDate +
-                '}';
+        // ÖNEMLİ: Çıktıyı senin istediğin forma getiriyoruz:
+        // BorrowedBook {id=6, memberId=4(Emre Gülşen), bookId=4(Suç ve Ceza), borrowDate=...}
+        StringBuilder sb = new StringBuilder("BorrowedBook {");
+        sb.append("id=").append(id);
+
+        sb.append(", memberId=").append(memberId);
+        if (memberName != null && !memberName.isBlank()) {
+            sb.append(" (").append(memberName).append(")");
+        }
+
+        sb.append(", bookId=").append(bookId);
+        if (bookTitle != null && !bookTitle.isBlank()) {
+            sb.append(" (").append(bookTitle).append(")");
+        }
+
+        sb.append(", borrowDate=").append(borrowDate);
+        sb.append('}');
+        return sb.toString();
     }
 }
