@@ -9,6 +9,9 @@ public class BorrowedBook {
     private int bookId;
     private LocalDateTime borrowDate;
 
+    private String memberName;
+    private String bookTitle;
+
     public BorrowedBook() {
     }
 
@@ -24,6 +27,8 @@ public class BorrowedBook {
         this.bookId = bookId;
         this.borrowDate = borrowDate;
     }
+
+    // ---------------- Getters & Setters ----------------
 
     public int getId() {
         return id;
@@ -57,12 +62,28 @@ public class BorrowedBook {
         this.borrowDate = borrowDate;
     }
 
+    public String getMemberName() {
+        return memberName;
+    }
+
+    public void setMemberName(String memberName) {
+        this.memberName = memberName;
+    }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
+
+    public void setBookTitle(String bookTitle) {
+        this.bookTitle = bookTitle;
+    }
+
     @Override
     public String toString() {
         return "BorrowedBook {" +
                 "id=" + id +
-                ", memberId=" + memberId +
-                ", bookId=" + bookId +
+                ", memberId=" + memberId + "(" + memberName + ")" +
+                ", bookId=" + bookId + "(" + bookTitle + ")" +
                 ", borrowDate=" + borrowDate +
                 '}';
     }
