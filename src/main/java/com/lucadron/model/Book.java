@@ -9,7 +9,7 @@ public class Book {
     private boolean isBorrowed;
     private int quantity;
 
-    public Book() {
+    public Book(String title, String author, int quantity) {
     }
 
     public Book(int id, String title, String author, int year, boolean isBorrowed, int quantity) {
