@@ -21,18 +21,12 @@ public class LibraryService {
     private final BorrowedBookRepository borrowRepo = new BorrowedBookRepository();
     private final Connection connection = DatabaseConnection.getConnection();
 
-    // ---------------------------
-    // ÜYE EKLEME
-    // ---------------------------
     public Member addMember(String name, String email) {
         validateMemberInput(name, email);
         Member member = new Member(name, email);
         return memberRepo.addMember(member);
     }
 
-    // ---------------------------
-    // KİTAP EKLEME (quantity ile)
-    // ---------------------------
     public Book addBook(String title, String author, int year) {
         return addBook(title, author, year, 1);
     }
@@ -48,9 +42,6 @@ public class LibraryService {
         return bookRepo.addBook(book);
     }
 
-    // ---------------------------
-    // KİTAP ÖDÜNÇ ALMA
-    // ---------------------------
     public void borrowBook(int memberId, int bookId) {
         try {
             connection.setAutoCommit(false);
@@ -77,7 +68,6 @@ public class LibraryService {
             BorrowedBook record = new BorrowedBook(memberId, bookId, LocalDateTime.now());
             borrowRepo.addBorrowRecord(record);
 
-            // quantity azalt
             bookRepo.updateQuantity(bookId, book.getQuantity() - 1);
 
             connection.commit();
@@ -88,9 +78,6 @@ public class LibraryService {
         }
     }
 
-    // ---------------------------
-    // KİTAP İADE
-    // ---------------------------
     public void returnBook(int memberId, int bookId) {
         try {
             connection.setAutoCommit(false);
@@ -100,10 +87,8 @@ public class LibraryService {
                 throw new RuntimeException(LanguageManager.format("error.book.notfound", bookId));
             }
 
-            // İade kaydı varsa sil
             borrowRepo.deleteBorrowRecord(memberId, bookId);
 
-            // quantity artır
             bookRepo.updateQuantity(bookId, book.getQuantity() + 1);
 
             connection.commit();
@@ -114,9 +99,6 @@ public class LibraryService {
         }
     }
 
-    // ---------------------------
-    // ÜYEYE GÖRE ÖDÜNÇ LİSTELEME
-    // ---------------------------
     public List<BorrowedBook> listBorrowedBooksByMember(int memberId) {
         List<BorrowedBook> list = borrowRepo.getBorrowedBooksByMemberId(memberId);
 
@@ -131,16 +113,10 @@ public class LibraryService {
         return list;
     }
 
-    // ---------------------------
-    // TÜM KİTAPLAR
-    // ---------------------------
     public List<Book> listAllBooks() {
         return bookRepo.getAllBooks();
     }
 
-    // ---------------------------
-    // TÜM ÜYELER
-    // ---------------------------
     public List<Member> listAllMembers() {
         List<Member> members = memberRepo.getAllMembers();
 
@@ -151,9 +127,6 @@ public class LibraryService {
         return members;
     }
 
-    // ---------------------------
-    // KİTAP ARAMA (partial search)
-    // ---------------------------
     public List<Book> searchBooks(String keyword) {
         if (keyword == null || keyword.isBlank()) {
             throw new RuntimeException(LanguageManager.get("error.search.empty"));
@@ -162,9 +135,6 @@ public class LibraryService {
         return bookRepo.searchBooks(keyword);
     }
 
-    // ---------------------------
-    // VALIDATION
-    // ---------------------------
     private void validateMemberInput(String name, String email) {
         if (name == null || name.trim().isEmpty()) {
             throw new RuntimeException(LanguageManager.get("error.validation.memberNameEmpty"));
