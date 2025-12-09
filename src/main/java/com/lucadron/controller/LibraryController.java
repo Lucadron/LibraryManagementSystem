@@ -71,7 +71,10 @@ public class LibraryController {
         System.out.print(LanguageManager.get("book.prompt.year") + " ");
         int year = Integer.parseInt(scanner.nextLine());
 
-        Book book = service.addBook(title, author, year);
+        System.out.print(LanguageManager.get("book.prompt.quantity") + " ");
+        int quantity = Integer.parseInt(scanner.nextLine());
+
+        Book book = service.addBook(title, author, year, quantity);
 
         System.out.println(GREEN + "ok| " + LanguageManager.format("book.add.success", book) + RESET);
     }
@@ -146,11 +149,9 @@ public class LibraryController {
 
         try {
             List<Member> members = service.listAllMembers();
-
             for (Member m : members) {
-                System.out.println(CYAN + m.toString() + RESET);
+                System.out.println(CYAN + m + RESET);
             }
-
         } catch (Exception e) {
             System.out.println(RED + "X| " + e.getMessage() + RESET);
         }
@@ -162,7 +163,7 @@ public class LibraryController {
         System.out.print(LanguageManager.get("search.prompt.keyword") + " ");
         String keyword = scanner.nextLine();
 
-        if (keyword == null || keyword.trim().isEmpty()) {
+        if (keyword.trim().isEmpty()) {
             System.out.println(YELLOW + "!| " + LanguageManager.get("error.validation.searchKeywordEmpty") + RESET);
             return;
         }
@@ -177,10 +178,9 @@ public class LibraryController {
         System.out.println(CYAN + LanguageManager.get("search.result.header") + RESET);
 
         for (Book book : results) {
-            // Durum bilgisini dilden bağımsız sabit yerine i18n ile yazıyoruz
-            String statusKey = book.isBorrowed()
-                    ? "book.status.borrowed"
-                    : "book.status.available";
+            String statusKey = book.getQuantity() > 0
+                    ? "book.status.available"
+                    : "book.status.borrowed";
 
             String statusLabel = LanguageManager.get(statusKey);
 
@@ -191,6 +191,7 @@ public class LibraryController {
                             ", title='" + book.getTitle() + '\'' +
                             ", author='" + book.getAuthor() + '\'' +
                             ", year=" + book.getYear() +
+                            ", quantity=" + book.getQuantity() +
                             ", status=" + statusLabel +
                             '}' +
                             RESET
