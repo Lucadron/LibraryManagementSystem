@@ -49,6 +49,44 @@ public class BookRepository {
         }
     }
 
+    public List<Book> searchBooksByTitleOrAuthor(String query) {
+        if (query == null) {
+            throw new IllegalArgumentException("Arama ifadesi null olamaz.");
+        }
+
+        String trimmed = query.trim();
+        if (trimmed.length() < 2) {
+            // ÖNEMLİ: Çok kısa sorgularda veritabanına gitmiyoruz
+            throw new IllegalArgumentException("Arama ifadesi en az 2 karakter olmalı.");
+        }
+
+        String sql = "SELECT id, title, author, year, is_borrowed " +
+                "FROM books " +
+                "WHERE LOWER(title) LIKE LOWER(?) OR LOWER(author) LIKE LOWER(?) " +
+                "ORDER BY title ASC, author ASC";
+
+        List<Book> results = new ArrayList<>();
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            String pattern = "%" + trimmed + "%";
+            stmt.setString(1, pattern);
+            stmt.setString(2, pattern);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Mevcut yardımcı metodu yeniden kullanıyoruz (DRY)
+                    Book book = mapToBook(rs);
+                    results.add(book);
+                }
+            }
+        } catch (SQLException e) {
+            // ÖNEMLİ: Burada swallow etmiyoruz, üst katmana anlamlı mesajla fırlatıyoruz
+            throw new RuntimeException("Kitap araması sırasında hata oluştu: " + e.getMessage(), e);
+        }
+
+        return results;
+    }
+
     public List<Book> searchBooksByTitle(String title) {
         String sql = "SELECT * FROM books WHERE LOWER(title) LIKE LOWER(?)";
 
