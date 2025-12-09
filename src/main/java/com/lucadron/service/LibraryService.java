@@ -116,6 +116,16 @@ public class LibraryService {
         return bookRepo.getAllBooks();
     }
 
+    public List<Member> listAllMembers() {
+        List<Member> members = memberRepo.getAllMembers();
+
+        if (members == null || members.isEmpty()) {
+            throw new RuntimeException(LanguageManager.get("list.members.none"));
+        }
+
+        return members;
+    }
+
     public List<Book> searchBooks(String keyword) {
         if (keyword == null || keyword.isBlank()) {
             throw new RuntimeException(LanguageManager.get("error.search.empty"));
