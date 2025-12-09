@@ -36,6 +36,7 @@ public class LibraryController {
                     case "5" -> listBorrowedByMember();
                     case "6" -> listAllBooks();
                     case "7" -> searchBooksInteractive();
+                    case "8" -> listAllMembers();
                     case "0" -> exitProgram();
                     default -> System.out.println(RED + "X| " + LanguageManager.get("error.invalid.choice") + RESET);
                 }
@@ -54,6 +55,7 @@ public class LibraryController {
         System.out.println("5 - " + LanguageManager.get("menu.option.listBorrowedByMember"));
         System.out.println("6 - " + LanguageManager.get("menu.option.listAllBooks"));
         System.out.println("7 - " + LanguageManager.get("menu.option.searchBooks"));
+        System.out.println("8 - " + LanguageManager.get("menu.option.listAllMembers"));
         System.out.println("0 - " + LanguageManager.get("menu.option.exit"));
     }
 
@@ -137,6 +139,21 @@ public class LibraryController {
 
         List<Book> books = service.listAllBooks();
         books.forEach(book -> System.out.println(CYAN + book + RESET));
+    }
+
+    private void listAllMembers() {
+        System.out.println("\n " + LanguageManager.get("list.members.header"));
+
+        try {
+            List<Member> members = service.listAllMembers();
+
+            for (Member m : members) {
+                System.out.println(CYAN + m.toString() + RESET);
+            }
+
+        } catch (Exception e) {
+            System.out.println(RED + "X| " + e.getMessage() + RESET);
+        }
     }
 
     private void searchBooksInteractive() {
