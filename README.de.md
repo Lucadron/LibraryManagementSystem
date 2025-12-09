@@ -98,8 +98,8 @@ Migrationen laufen automatisch beim Start.
 
 ## 🔧 Technologie-Stack
 
-| Komponente | Technologie |
-|------------|-------------|
+| Schicht | Technologie |
+|---------|-------------|
 | Sprache | Java 21 |
 | Build-Tool | Maven |
 | Datenbank | PostgreSQL 16 |
