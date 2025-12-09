@@ -21,18 +21,36 @@ public class LibraryService {
     private final BorrowedBookRepository borrowRepo = new BorrowedBookRepository();
     private final Connection connection = DatabaseConnection.getConnection();
 
+    // ---------------------------
+    // ÜYE EKLEME
+    // ---------------------------
     public Member addMember(String name, String email) {
         validateMemberInput(name, email);
         Member member = new Member(name, email);
         return memberRepo.addMember(member);
     }
 
+    // ---------------------------
+    // KİTAP EKLEME (quantity ile)
+    // ---------------------------
     public Book addBook(String title, String author, int year) {
-        validateBookInput(title, author, year);
-        Book book = new Book(title, author, year);
+        return addBook(title, author, year, 1);
+    }
+
+    public Book addBook(String title, String author, int year, int quantity) {
+        validateBookInput(title, author, year, quantity);
+
+        if (quantity < 1) {
+            throw new RuntimeException(LanguageManager.get("error.book.quantity"));
+        }
+
+        Book book = new Book(title, author, year, quantity);
         return bookRepo.addBook(book);
     }
 
+    // ---------------------------
+    // KİTAP ÖDÜNÇ ALMA
+    // ---------------------------
     public void borrowBook(int memberId, int bookId) {
         try {
             connection.setAutoCommit(false);
@@ -47,8 +65,8 @@ public class LibraryService {
                 throw new RuntimeException(LanguageManager.format("error.book.notfound", bookId));
             }
 
-            if (book.isBorrowed()) {
-                throw new RuntimeException(LanguageManager.format("error.book.alreadyBorrowed", bookId));
+            if (book.getQuantity() <= 0) {
+                throw new RuntimeException(LanguageManager.get("error.book.noStock"));
             }
 
             List<BorrowedBook> borrowedList = borrowRepo.getBorrowedBooksByMemberId(memberId);
@@ -59,7 +77,8 @@ public class LibraryService {
             BorrowedBook record = new BorrowedBook(memberId, bookId, LocalDateTime.now());
             borrowRepo.addBorrowRecord(record);
 
-            bookRepo.updateBorrowedStatus(bookId, true);
+            // quantity azalt
+            bookRepo.updateQuantity(bookId, book.getQuantity() - 1);
 
             connection.commit();
 
@@ -69,6 +88,9 @@ public class LibraryService {
         }
     }
 
+    // ---------------------------
+    // KİTAP İADE
+    // ---------------------------
     public void returnBook(int memberId, int bookId) {
         try {
             connection.setAutoCommit(false);
@@ -78,12 +100,11 @@ public class LibraryService {
                 throw new RuntimeException(LanguageManager.format("error.book.notfound", bookId));
             }
 
-            if (!book.isBorrowed()) {
-                throw new RuntimeException(LanguageManager.get("error.book.notBorrowed"));
-            }
-
+            // İade kaydı varsa sil
             borrowRepo.deleteBorrowRecord(memberId, bookId);
-            bookRepo.updateBorrowedStatus(bookId, false);
+
+            // quantity artır
+            bookRepo.updateQuantity(bookId, book.getQuantity() + 1);
 
             connection.commit();
 
@@ -93,29 +114,33 @@ public class LibraryService {
         }
     }
 
+    // ---------------------------
+    // ÜYEYE GÖRE ÖDÜNÇ LİSTELEME
+    // ---------------------------
     public List<BorrowedBook> listBorrowedBooksByMember(int memberId) {
         List<BorrowedBook> list = borrowRepo.getBorrowedBooksByMemberId(memberId);
 
         for (BorrowedBook bb : list) {
-
             Member member = memberRepo.getMemberById(bb.getMemberId());
-            if (member != null) {
-                bb.setMemberName(member.getName());
-            }
+            if (member != null) bb.setMemberName(member.getName());
 
             Book book = bookRepo.getBookById(bb.getBookId());
-            if (book != null) {
-                bb.setBookTitle(book.getTitle());
-            }
+            if (book != null) bb.setBookTitle(book.getTitle());
         }
 
         return list;
     }
 
+    // ---------------------------
+    // TÜM KİTAPLAR
+    // ---------------------------
     public List<Book> listAllBooks() {
         return bookRepo.getAllBooks();
     }
 
+    // ---------------------------
+    // TÜM ÜYELER
+    // ---------------------------
     public List<Member> listAllMembers() {
         List<Member> members = memberRepo.getAllMembers();
 
@@ -126,6 +151,9 @@ public class LibraryService {
         return members;
     }
 
+    // ---------------------------
+    // KİTAP ARAMA (partial search)
+    // ---------------------------
     public List<Book> searchBooks(String keyword) {
         if (keyword == null || keyword.isBlank()) {
             throw new RuntimeException(LanguageManager.get("error.search.empty"));
@@ -134,6 +162,9 @@ public class LibraryService {
         return bookRepo.searchBooks(keyword);
     }
 
+    // ---------------------------
+    // VALIDATION
+    // ---------------------------
     private void validateMemberInput(String name, String email) {
         if (name == null || name.trim().isEmpty()) {
             throw new RuntimeException(LanguageManager.get("error.validation.memberNameEmpty"));
@@ -146,7 +177,7 @@ public class LibraryService {
         }
     }
 
-    private void validateBookInput(String title, String author, int year) {
+    private void validateBookInput(String title, String author, int year, int quantity) {
         if (title == null || title.trim().isEmpty()) {
             throw new RuntimeException(LanguageManager.get("error.validation.bookTitleEmpty"));
         }
@@ -156,12 +187,12 @@ public class LibraryService {
         if (year < 0 || year > LocalDateTime.now().getYear()) {
             throw new RuntimeException(LanguageManager.get("error.validation.bookYear"));
         }
+        if (quantity < 1) {
+            throw new RuntimeException(LanguageManager.get("error.book.quantity"));
+        }
     }
 
     private void rollbackQuietly() {
-        try {
-            connection.rollback();
-        } catch (SQLException ignored) {
-        }
+        try { connection.rollback(); } catch (SQLException ignored) {}
     }
 }
