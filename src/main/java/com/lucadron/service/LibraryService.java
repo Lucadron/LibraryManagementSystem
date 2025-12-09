@@ -59,6 +59,10 @@ public class LibraryService {
             }
 
             BorrowedBook record = new BorrowedBook(memberId, bookId, LocalDateTime.now());
+
+            record.setMemberName(member.getName());
+            record.setBookTitle(book.getTitle());
+
             borrowRepo.addBorrowRecord(record);
 
             bookRepo.updateBorrowedStatus(bookId, true);
@@ -104,20 +108,22 @@ public class LibraryService {
     }
 
     public List<BorrowedBook> listBorrowedBooksByMember(int memberId) {
-        return borrowRepo.getBorrowedBooksByMemberId(memberId);
+
+        List<BorrowedBook> list = borrowRepo.getBorrowedBooksByMemberId(memberId);
+
+        for (BorrowedBook b : list) {
+            Member m = memberRepo.getMemberById(b.getMemberId());
+            Book book = bookRepo.getBookById(b.getBookId());
+
+            if (m != null) b.setMemberName(m.getName());
+            if (book != null) b.setBookTitle(book.getTitle());
+        }
+
+        return list;
     }
 
     public List<Book> listAllBooks() {
         return bookRepo.getAllBooks();
-    }
-
-    public List<Book> searchBooks(String keyword) {
-        if (keyword == null || keyword.trim().isEmpty()) {
-            throw new RuntimeException(LanguageManager.get("error.validation.searchKeywordEmpty"));
-        }
-
-        String trimmed = keyword.trim();
-        return bookRepo.searchBooks(trimmed);
     }
 
     private void validateMemberInput(String name, String email) {
