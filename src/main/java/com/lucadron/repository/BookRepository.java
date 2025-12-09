@@ -12,13 +12,14 @@ public class BookRepository {
     private final Connection connection = DatabaseConnection.getConnection();
 
     public Book addBook(Book book) {
-        String sql = "INSERT INTO books (title, author, year, is_borrowed) VALUES (?, ?, ?, ?) RETURNING id";
+        String sql = "INSERT INTO books (title, author, year, is_borrowed, quantity) VALUES (?, ?, ?, ?, ?) RETURNING id";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, book.getTitle());
             stmt.setString(2, book.getAuthor());
             stmt.setInt(3, book.getYear());
             stmt.setBoolean(4, book.isBorrowed());
+            stmt.setInt(5, book.getQuantity());
 
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -75,7 +76,6 @@ public class BookRepository {
 
         return results;
     }
-
 
     public List<Book> searchBooksByTitle(String title) {
         String sql = "SELECT * FROM books WHERE LOWER(title) LIKE LOWER(?)";
@@ -156,7 +156,21 @@ public class BookRepository {
                 rs.getString("title"),
                 rs.getString("author"),
                 rs.getInt("year"),
-                rs.getBoolean("is_borrowed")
+                rs.getBoolean("is_borrowed"),
+                rs.getInt("quantity")
         );
     }
+
+    public void updateQuantity(int bookId, int quantity) {
+        String sql = "UPDATE books SET quantity = ? WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, quantity);
+            stmt.setInt(2, bookId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Quantity was not updated: " + e.getMessage());
+        }
+    }
+
 }
