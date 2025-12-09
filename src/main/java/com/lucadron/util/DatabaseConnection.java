@@ -17,6 +17,7 @@ public class DatabaseConnection {
 
     static {
         loadProperties();
+        overrideWithEnvIfPresent();
         createConnection();
     }
 
@@ -26,7 +27,7 @@ public class DatabaseConnection {
                 .getResourceAsStream("application.properties")) {
 
             if (input == null) {
-                throw new RuntimeException("application.properties bulunamadı!");
+                throw new RuntimeException("application.properties not found!");
             }
 
             Properties properties = new Properties();
@@ -38,16 +39,42 @@ public class DatabaseConnection {
             autoCommit = Boolean.parseBoolean(properties.getProperty("db.autocommit", "false"));
 
         } catch (IOException e) {
-            throw new RuntimeException("application.properties okunurken hata oluştu: " + e.getMessage());
+            throw new RuntimeException("application.properties failed to reading.: " + e.getMessage(), e);
+        }
+    }
+
+    private static void overrideWithEnvIfPresent() {
+        String envUrl = System.getenv("DB_URL");
+        if (envUrl != null && !envUrl.isBlank()) {
+            url = envUrl;
+        }
+
+        String envUser = System.getenv("DB_USER");
+        if (envUser != null && !envUser.isBlank()) {
+            user = envUser;
+        }
+
+        String envPassword = System.getenv("DB_PASSWORD");
+        if (envPassword != null && !envPassword.isBlank()) {
+            password = envPassword;
+        }
+
+        String envAutoCommit = System.getenv("DB_AUTOCOMMIT");
+        if (envAutoCommit != null && !envAutoCommit.isBlank()) {
+            autoCommit = Boolean.parseBoolean(envAutoCommit);
         }
     }
 
     private static void createConnection() {
         try {
+            if (url == null || user == null || password == null) {
+                throw new IllegalStateException("Database connection information is missing! (url/user/password)");
+            }
+
             connection = DriverManager.getConnection(url, user, password);
             connection.setAutoCommit(autoCommit);
         } catch (SQLException e) {
-            throw new RuntimeException("Veritabanına bağlanılamadı: " + e.getMessage());
+            throw new RuntimeException("Can not connect to database: " + e.getMessage(), e);
         }
     }
 
@@ -57,9 +84,11 @@ public class DatabaseConnection {
 
     public static void close() {
         try {
-            if (connection != null) connection.close();
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
         } catch (SQLException e) {
-            System.err.println("Bağlantı kapatılırken hata oluştu: " + e.getMessage());
+            System.err.println("Error occurred while app closing: " + e.getMessage());
         }
     }
 }
