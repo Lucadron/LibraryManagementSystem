@@ -23,14 +23,12 @@ public class LibraryService {
 
     public Member addMember(String name, String email) {
         validateMemberInput(name, email);
-
         Member member = new Member(name, email);
         return memberRepo.addMember(member);
     }
 
     public Book addBook(String title, String author, int year) {
         validateBookInput(title, author, year);
-
         Book book = new Book(title, author, year);
         return bookRepo.addBook(book);
     }
@@ -59,10 +57,6 @@ public class LibraryService {
             }
 
             BorrowedBook record = new BorrowedBook(memberId, bookId, LocalDateTime.now());
-
-            record.setMemberName(member.getName());
-            record.setBookTitle(book.getTitle());
-
             borrowRepo.addBorrowRecord(record);
 
             bookRepo.updateBorrowedStatus(bookId, true);
@@ -70,11 +64,7 @@ public class LibraryService {
             connection.commit();
 
         } catch (Exception e) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                System.err.println(LanguageManager.get("error.rollback") + ": " + ex.getMessage());
-            }
+            rollbackQuietly();
             throw new RuntimeException(LanguageManager.format("error.borrow.failed", e.getMessage()));
         }
     }
@@ -98,25 +88,25 @@ public class LibraryService {
             connection.commit();
 
         } catch (Exception e) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                System.err.println(LanguageManager.get("error.rollback") + ": " + ex.getMessage());
-            }
+            rollbackQuietly();
             throw new RuntimeException(LanguageManager.format("error.return.failed", e.getMessage()));
         }
     }
 
     public List<BorrowedBook> listBorrowedBooksByMember(int memberId) {
-
         List<BorrowedBook> list = borrowRepo.getBorrowedBooksByMemberId(memberId);
 
-        for (BorrowedBook b : list) {
-            Member m = memberRepo.getMemberById(b.getMemberId());
-            Book book = bookRepo.getBookById(b.getBookId());
+        for (BorrowedBook bb : list) {
 
-            if (m != null) b.setMemberName(m.getName());
-            if (book != null) b.setBookTitle(book.getTitle());
+            Member member = memberRepo.getMemberById(bb.getMemberId());
+            if (member != null) {
+                bb.setMemberName(member.getName());
+            }
+
+            Book book = bookRepo.getBookById(bb.getBookId());
+            if (book != null) {
+                bb.setBookTitle(book.getTitle());
+            }
         }
 
         return list;
@@ -127,13 +117,11 @@ public class LibraryService {
     }
 
     public List<Book> searchBooks(String keyword) {
-        if (keyword == null || keyword.trim().isEmpty()) {
+        if (keyword == null || keyword.isBlank()) {
             throw new RuntimeException(LanguageManager.get("error.search.empty"));
         }
 
-        List<Book> results = bookRepo.searchBooksByKeyword(keyword.trim());
-
-        return results;
+        return bookRepo.searchBooks(keyword);
     }
 
     private void validateMemberInput(String name, String email) {
@@ -157,6 +145,13 @@ public class LibraryService {
         }
         if (year < 0 || year > LocalDateTime.now().getYear()) {
             throw new RuntimeException(LanguageManager.get("error.validation.bookYear"));
+        }
+    }
+
+    private void rollbackQuietly() {
+        try {
+            connection.rollback();
+        } catch (SQLException ignored) {
         }
     }
 }
