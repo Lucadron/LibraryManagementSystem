@@ -28,6 +28,8 @@ public class BorrowedBook {
         this.borrowDate = borrowDate;
     }
 
+
+
     // ---------------- Getters & Setters ----------------
 
     public int getId() {
